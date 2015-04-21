@@ -62,10 +62,14 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
     private List<String> fetchEventsFromCalendar(int amountOfEvents) throws IOException {
         // List the next 10 events from the primary calendar.
         DateTime now = new DateTime(System.currentTimeMillis());
+        DateTime nowPlusAMonth = new DateTime(System.currentTimeMillis()+2628000000L);
+        System.out.println(now);
+        System.out.println(nowPlusAMonth);
         List<String> eventStrings = new ArrayList<>();
         Events events = mActivity.mService.events().list("primary")
                 .setMaxResults(amountOfEvents)
                 .setTimeMin(now)
+                .setTimeMax(nowPlusAMonth)
                 .setOrderBy("startTime")
                 .setSingleEvents(true)
                 .execute();
