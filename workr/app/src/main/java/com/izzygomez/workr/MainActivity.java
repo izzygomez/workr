@@ -44,6 +44,11 @@ public class MainActivity extends ActionBarActivity {
     boolean deleteMode = false;
 
     // <Izzy's variables>
+    /**
+     * A Calendar service object used to query or modify calendars via the
+     * Calendar API. Note: Do not confuse this class with the
+     * com.google.api.services.calendar.model.Calendar class.
+     */
     com.google.api.services.calendar.Calendar mService;
 
     GoogleAccountCredential credential;
@@ -64,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
 
         adapter.notifyDataSetChanged();
         Log.d("listItems",listItems.toString());

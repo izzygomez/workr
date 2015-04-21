@@ -36,7 +36,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         try {
             mActivity.clearEvents();
-            mActivity.updateEventList(fetchEventsFromCalendar());
+            mActivity.updateEventList(fetchEventsFromCalendar(10));
 
         } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
             mActivity.showGooglePlayServicesAvailabilityErrorDialog(
@@ -59,12 +59,12 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
      * @return List of Strings describing returned events.
      * @throws IOException
      */
-    private List<String> fetchEventsFromCalendar() throws IOException {
+    private List<String> fetchEventsFromCalendar(int amountOfEvents) throws IOException {
         // List the next 10 events from the primary calendar.
         DateTime now = new DateTime(System.currentTimeMillis());
-        List<String> eventStrings = new ArrayList<String>();
-        Events events = mActivity.mService.events().list("ce0eg6masvthf1apfap0ct0164@group.calendar.google.com") // Was "primary"
-                .setMaxResults(10)
+        List<String> eventStrings = new ArrayList<>();
+        Events events = mActivity.mService.events().list("primary")
+                .setMaxResults(amountOfEvents)
                 .setTimeMin(now)
                 .setOrderBy("startTime")
                 .setSingleEvents(true)
