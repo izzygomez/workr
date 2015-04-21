@@ -62,7 +62,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
         // List the next 10 events from the primary calendar.
         DateTime now = new DateTime(System.currentTimeMillis());
         List<String> eventStrings = new ArrayList<String>();
-        Events events = mActivity.mService.events().list("primary")
+        Events events = mActivity.mService.events().list("ce0eg6masvthf1apfap0ct0164@group.calendar.google.com") // Was "primary"
                 .setMaxResults(10)
                 .setTimeMin(now)
                 .setOrderBy("startTime")
