@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class MainActivity extends ActionBarActivity {
     ArrayList<String> listItems = new ArrayList<String>();
     ArrayAdapter<String> adapter;
@@ -52,8 +51,10 @@ public class MainActivity extends ActionBarActivity {
     com.google.api.services.calendar.Calendar mService;
 
     GoogleAccountCredential credential;
+
     private TextView mStatusText;
     private TextView mEventText;
+
     final HttpTransport transport = AndroidHttp.newCompatibleTransport();
     final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
@@ -62,12 +63,17 @@ public class MainActivity extends ActionBarActivity {
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = {CalendarScopes.CALENDAR_READONLY};
+
     // </Izzy's variables>
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mStatusText = (TextView) findViewById(R.id.mStatusText);
+        mEventText = (TextView) findViewById(R.id.mEventText);
+
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
 
@@ -85,6 +91,8 @@ public class MainActivity extends ActionBarActivity {
 //            arg0.getItemAtPosition(position);
             }
         });
+
+
 
         // IZZY'S CODE
         // Initialize credentials and calendar service

@@ -287,5 +287,4 @@ public class UpcomingEventsActivity extends Activity {
             }
         });
     }
-
 }
