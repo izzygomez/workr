@@ -492,13 +492,13 @@ public class MainActivity extends ActionBarActivity {
 
         int freeTime = parseEventList(totalTimeThisWeek);
 //        Log.d("FreeTime", String.valueOf(freeTime));
-        freeTime =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
+        int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
         Log.d("TryAgain", String.valueOf(freeTime));
 
 
-        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTime + "/" + totalTimeThisWeek);
-        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(totalTimeThisWeek);
-        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTime);
+        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
     }
 
     public int parseEventList(int freeTime)  {
