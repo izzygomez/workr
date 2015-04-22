@@ -36,9 +36,7 @@
             android:layout_height="40dp">
 
             <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="wrap_content"
-<<<<<<< HEAD
                 android:layout_height="wrap_content"
                 android:id="@+id/freeTimeProgressBar"
                 style="?android:attr/progressBarStyleHorizontal"
@@ -63,11 +61,6 @@
                 android:layout_alignTop="@+id/textView"
                 android:layout_toEndOf="@+id/textView"
                 android:text="0/0" />
-=======
-                android:layout_height="75dp"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/freeTimeProgressBar" />
->>>>>>> origin/master
 
         </RelativeLayout>
 
