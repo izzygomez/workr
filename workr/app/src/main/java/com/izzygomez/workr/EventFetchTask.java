@@ -56,7 +56,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
     }
 
     /**
-     * Fetch a list of the next 10 events from the primary calendar.
+     * Fetch a list of the next 'amountOfEvents' events from the primary calendar.
      * @return List of Strings describing returned events.
      * @throws IOException
      */
