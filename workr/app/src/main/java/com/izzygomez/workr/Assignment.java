@@ -1,4 +1,4 @@
-package edu.mit.pdgraham.remindertest;
+package com.izzygomez.workr;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

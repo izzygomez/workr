@@ -1,25 +1,17 @@
-package edu.mit.pdgraham.remindertest;
+package com.izzygomez.workr;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
+/**
+ * Created by pdgraham on 4/22/15.
+ */
+public class NotifyUser {
 
-public class MainActivity extends ActionBarActivity {
     ArrayList assignments = new ArrayList<Assignment>(); // Subject, EstimatedTime, DueDate, Priority
     int hourOfDayBegins = 8; // For 8 AM or w/e
     int hoursInADay = 24;
@@ -28,71 +20,10 @@ public class MainActivity extends ActionBarActivity {
     Assignment assignmentTwo = new Assignment("6.s198 Project 4 Beta", 2, projectDueDate,true);
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
-    NotificationCompat.Builder mBuilder =
-            new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle("My notification")
-                    .setContentText("Hello World!");
-
-//    Intent resultIntent = new Intent(this, ResultActivity.class);
-//    // Because clicking the notification opens a new ("special") activity, there's
-//// no need to create an artificial back stack.
-//    PendingIntent resultPendingIntent =
-//            PendingIntent.getActivity(
-//                    this,
-//                    0,
-//                    resultIntent,
-//                    PendingIntent.FLAG_UPDATE_CURRENT
-//            );
-
-//    // Sets an ID for the notification
-//    int mNotificationId = 001;
-//    // Gets an instance of the NotificationManager service
-//    NotificationManager mNotifyMgr =
-//            (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//    // Builds the notification and issues it.
-//    mNotifyMgr.notify(mNotificationId, mBuilder.build());
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        projectDueDate.set(2015, 3, 22);
-        System.out.println(sdf.format(projectDueDate.getTime()));
-//        projectDueDate.set()
-        assignments.add(assignmentOne);
-        assignments.add(assignmentTwo);
-        ((TextView) findViewById(R.id.textView)).setText(assignments.toString());
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     /*
-    * Total time starting from now (when function is called) till the end of the given day,
-    ** Currently assumes the two days are of the same month.
-     */
+* Total time starting from now (when function is called) till the end of the given day,
+** Currently assumes the two days are of the same month.
+ */
     public int calculateTotalTime(Calendar timeTill ) {
         Calendar currentTime = Calendar.getInstance();
         int hourOfDay = currentTime.get(Calendar.HOUR_OF_DAY);
@@ -181,12 +112,9 @@ public class MainActivity extends ActionBarActivity {
         return notifyUser;
     }
 
-    public void timeLeft (View view) {
-//        ((TextView)findViewById(R.id.textView)).setText("Assignment One Due on: " + sdf.format(assignmentOne.getDueDate().getTime()) + " is " + calculateTotalTime(assignmentOne.getDueDate()) + " hours left");
-        ((TextView)findViewById(R.id.textView)).setText("You have " + percentOfTimeLeft(assignmentOne));
-    }
-
+//    public void timeLeft (View view) {
+////        ((TextView)findViewById(R.id.textView)).setText("Assignment One Due on: " + sdf.format(assignmentOne.getDueDate().getTime()) + " is " + calculateTotalTime(assignmentOne.getDueDate()) + " hours left");
+//        ((TextView)findViewById(R.id.textView)).setText("You have " + percentOfTimeLeft(assignmentOne));
+//    }
 
 }
-
-
