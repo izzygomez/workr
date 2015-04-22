@@ -102,6 +102,7 @@ public class MainActivity extends ActionBarActivity {
                 for(String s: lastClickedArrayString){
                     lastClickedRowArray.add(s);
                 }
+                goToTaskInputScreen();
 
                 if (deleteMode){
                     arg0.getItemAtPosition(position);
@@ -131,7 +132,7 @@ public class MainActivity extends ActionBarActivity {
                             Log.d("ran", "ran");
                         }
                         else{
-                            goToTaskInputScreen();
+//                            goToTaskInputScreen();
                         }
                         break;
                     default: return false;
@@ -269,6 +270,7 @@ public class MainActivity extends ActionBarActivity {
             Log.d("taskInputData", taskInputData.toString());
 //            listItems.remove(lastClickedRow);
 //            adapter.notifyDataSetChanged();
+            lastClickedRowArray = new ArrayList<String>();
             addToList(taskInputData);
 
         }
