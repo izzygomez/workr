@@ -52,7 +52,7 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<String> lastClickedRowArray = new ArrayList<String>();
     ArrayList<String> taskInputData = new ArrayList<String>();
 
-//
+
 
     // <Izzy's variables>
     /**
@@ -90,7 +90,7 @@ public class MainActivity extends ActionBarActivity {
 
         adapter.notifyDataSetChanged();
         Log.d("listItems",listItems.toString());
-        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         taskListView.setAdapter(adapter);
 
 
@@ -98,16 +98,17 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 lastClickedRow = position;
                 String[] lastClickedArrayString = arg0.getItemAtPosition(position).toString().split(" ");
+                lastClickedRowArray = new ArrayList<String>();
                 for(String s: lastClickedArrayString){
                     lastClickedRowArray.add(s);
                 }
 
-//                if (deleteMode){
-//                    arg0.getItemAtPosition(position);
-//                    listItems.remove(position);
-//                    adapter.notifyDataSetChanged();
-//                }
-//            arg0.getItemAtPosition(position);
+                if (deleteMode){
+                    arg0.getItemAtPosition(position);
+                    listItems.remove(position);
+                    adapter.notifyDataSetChanged();
+                }
+            arg0.getItemAtPosition(position);
             }
         });
         taskListView.setOnTouchListener(new View.OnTouchListener(){
@@ -160,18 +161,6 @@ public class MainActivity extends ActionBarActivity {
         startActivityForResult(taskInputIntent, 5);
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if ((requestCode == 5) &&
-                (resultCode == RESULT_OK)) {
-
-            taskInputData = data.getExtras().getStringArrayList("returnData");
-            Log.d("taskInputData", taskInputData.toString());
-//            listItems.remove(lastClickedRow);
-//            adapter.notifyDataSetChanged();
-            addToList(taskInputData);
-
-        }
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -249,7 +238,7 @@ public class MainActivity extends ActionBarActivity {
      * Called whenever this activity is pushed to the foreground, such as after
      * a call to onCreate().
      */
-    @Override
+//    @Override
     protected void onResume() {
         super.onResume();
         if (isGooglePlayServicesAvailable()) {
@@ -272,6 +261,17 @@ public class MainActivity extends ActionBarActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if ((requestCode == 5) &&
+                (resultCode == RESULT_OK)) {
+
+            taskInputData = data.getExtras().getStringArrayList("returnData");
+            Log.d("taskInputData", taskInputData.toString());
+//            listItems.remove(lastClickedRow);
+//            adapter.notifyDataSetChanged();
+            addToList(taskInputData);
+
+        }
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:

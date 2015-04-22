@@ -19,18 +19,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
         <activity
             android:name=".TaskInputScreen"
             android:label="@string/title_activity_task_input_screen" >
         </activity>
-=======
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
->>>>>>> 3888dd4a73c98f8794d3021dbf28b798ca0017ac
     </application>
 
 </manifest>
