@@ -1,4 +1,4 @@
-package com.example.calendarquickstart;
+package com.izzygomez.workr;
 
 import android.os.AsyncTask;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -13,17 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Created by Ismael on 4/21/2015.
  * An asynchronous task that handles the Calendar API event list retrieval.
  * Placing the API calls in their own task ensures the UI stays responsive.
  */
 public class EventFetchTask extends AsyncTask<Void, Void, Void> {
-    private UpcomingEventsActivity mActivity;
+    private MainActivity mActivity;
 
     /**
      * Constructor.
      * @param activity UpcomingEventsActivity that spawned this task.
      */
-    EventFetchTask(UpcomingEventsActivity activity) {
+    EventFetchTask(MainActivity activity) {
         this.mActivity = activity;
     }
 
@@ -35,7 +36,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         try {
             mActivity.clearEvents();
-            mActivity.updateEventList(fetchEventsFromCalendar());
+            mActivity.updateEventList(fetchEventsFromCalendar(15)); // <---- amount of events retrieved
 
         } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
             mActivity.showGooglePlayServicesAvailabilityErrorDialog(
@@ -44,7 +45,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
         } catch (UserRecoverableAuthIOException userRecoverableException) {
             mActivity.startActivityForResult(
                     userRecoverableException.getIntent(),
-                    UpcomingEventsActivity.REQUEST_AUTHORIZATION);
+                    MainActivity.REQUEST_AUTHORIZATION);
 
         } catch (IOException e) {
             mActivity.updateStatus("The following error occurred: " +
@@ -58,13 +59,17 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
      * @return List of Strings describing returned events.
      * @throws IOException
      */
-    private List<String> fetchEventsFromCalendar() throws IOException {
-        // List the next 10 events from the primary calendar.
+    private List<String> fetchEventsFromCalendar(int amountOfEvents) throws IOException {
+        // List the next amountOfEvents events from the primary calendar.
         DateTime now = new DateTime(System.currentTimeMillis());
-        List<String> eventStrings = new ArrayList<String>();
-        Events events = mActivity.mService.events().list("ce0eg6masvthf1apfap0ct0164@group.calendar.google.com") // Was "primary"
-                .setMaxResults(10)
+        DateTime aMonthFromNow = new DateTime(System.currentTimeMillis()+2628000000L);
+        System.out.println(now);
+        System.out.println(aMonthFromNow);
+        List<String> eventStrings = new ArrayList<>();
+        Events events = mActivity.mService.events().list("primary")
+                .setMaxResults(amountOfEvents)
                 .setTimeMin(now)
+                .setTimeMax(aMonthFromNow)
                 .setOrderBy("startTime")
                 .setSingleEvents(true)
                 .execute();
