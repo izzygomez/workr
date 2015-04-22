@@ -18,7 +18,7 @@ import java.util.List;
  * Placing the API calls in their own task ensures the UI stays responsive.
  */
 public class EventFetchTask extends AsyncTask<Void, Void, Void> {
-    private MainActivity mActivity;
+    public MainActivity mActivity;
 
     /**
      * Constructor.
@@ -51,6 +51,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
             mActivity.updateStatus("The following error occurred: " +
                     e.getMessage());
         }
+
         return null;
     }
 
@@ -59,7 +60,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
      * @return List of Strings describing returned events.
      * @throws IOException
      */
-    private List<String> fetchEventsFromCalendar(int amountOfEvents) throws IOException {
+    public List<String> fetchEventsFromCalendar(int amountOfEvents) throws IOException {
         // List the next amountOfEvents events from the primary calendar.
         DateTime now = new DateTime(System.currentTimeMillis());
         DateTime aMonthFromNow = new DateTime(System.currentTimeMillis()+2628000000L);
@@ -77,13 +78,14 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
 
         for (Event event : items) {
             DateTime start = event.getStart().getDateTime();
+            DateTime end = event.getEnd().getDateTime();
             if (start == null) {
                 // All-day events don't have start times, so just use
                 // the start date.
                 start = event.getStart().getDate();
             }
             eventStrings.add(
-                    String.format("%s (%s)", event.getSummary(), start));
+                    String.format("%s (%s, %s)", event.getSummary(), start, end));
         }
         return eventStrings;
     }

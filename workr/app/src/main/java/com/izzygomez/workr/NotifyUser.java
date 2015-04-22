@@ -24,7 +24,10 @@ public class NotifyUser {
 * Total time starting from now (when function is called) till the end of the given day,
 ** Currently assumes the two days are of the same month.
  */
-    public int calculateTotalTime(Calendar timeTill ) {
+    public static int calculateTotalTime(Calendar timeTill ) {
+        int hourOfDayBegins = 8; // For 8 AM or w/e
+        int hoursInADay = 24;
+
         Calendar currentTime = Calendar.getInstance();
         int hourOfDay = currentTime.get(Calendar.HOUR_OF_DAY);
 
@@ -57,7 +60,7 @@ public class NotifyUser {
     /*
         Implemented currently only with the assignments
      */
-    public int calculateFreeTime(int totalFreeHours, ArrayList<Assignment> assignmentsTemp) {
+    public static int calculateFreeTime(int totalFreeHours, ArrayList<Assignment> assignmentsTemp) {
         int hoursFromAssignments = 0;
 
         for (Assignment assignment : ((ArrayList<Assignment>) assignmentsTemp)) {
