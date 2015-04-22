@@ -29,27 +29,34 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <RelativeLayout
+            android:layout_height="wrap_content">
+
+            <ProgressBar
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/freeTimeProgressBar"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true" />
+                android:layout_height="wrap_content"
+                android:id="@+id/freeTimeProgressBar"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true">
 
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/addTaskButton"
-                    android:onClick="addToListTest"
+                    android:onClick="clickedPlus"
                     android:src="@drawable/plus"
-                    android:layout_below="@+id/freeTimeProgressBar"
                     />
 
                 <ImageButton
@@ -58,11 +65,11 @@
                     android:id="@+id/trashButton"
                     android:src="@drawable/trash"
                     android:onClick="setDeleteMode"
-                    android:layout_below="@+id/freeTimeProgressBar"
                     android:layout_toRightOf="@+id/addTaskButton"/>
-            </RelativeLayout>
+            </LinearLayout>
 
-        </LinearLayout>
+        </RelativeLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

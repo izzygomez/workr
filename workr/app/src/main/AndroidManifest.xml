@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TaskInputScreen"
+            android:label="@string/title_activity_task_input_screen" >
+        </activity>
     </application>
 
 </manifest>
