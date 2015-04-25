@@ -508,40 +508,40 @@ public class MainActivity extends ActionBarActivity {
         int timeTakenForEvents = 0;
 
         if (usersEvents.size() > 0) {
-
             Log.d("events", usersEvents.toString());
             for( String event : usersEvents) {
-                Calendar tempStart = Calendar.getInstance();
-                Calendar tempEnd = Calendar.getInstance();
+                if (event.contains(":")) {
 
-                String tempEvent = event.substring(event.indexOf("(")+1,event.lastIndexOf(")")-1);
-                String start = tempEvent.substring(0, tempEvent.indexOf(","));
-                start = start.substring(0, start.lastIndexOf("."));
-                start = start.replace("T", " ");
-                String end = tempEvent.substring(tempEvent.lastIndexOf(",") + 1, tempEvent.lastIndexOf("."));
-                end = end.replace("T", " ");
+                    Calendar tempStart = Calendar.getInstance();
+                    Calendar tempEnd = Calendar.getInstance();
 
-                try{
+                    String tempEvent = event.substring(event.indexOf("(") + 1, event.lastIndexOf(")") - 1);
+                    String start = tempEvent.substring(0, tempEvent.indexOf(","));
+                    start = start.substring(0, start.lastIndexOf("."));
+                    start = start.replace("T", " ");
+                    String end = tempEvent.substring(tempEvent.lastIndexOf(",") + 1, tempEvent.lastIndexOf("."));
+                    end = end.replace("T", " ");
 
-                    Date startDate =  sdf.parse(start);
-                    tempStart.setTime(startDate);
+                    try {
 
-                    Date endDate = sdf.parse(end);
-                    tempEnd.setTime(endDate);
+                        Date startDate = sdf.parse(start);
+                        tempStart.setTime(startDate);
 
-                    if (!Calendar.getInstance().after(startDate)) {
-                        if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
-                            timeTakenForEvents += tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR);
+                        Date endDate = sdf.parse(end);
+                        tempEnd.setTime(endDate);
+
+                        if (!Calendar.getInstance().after(startDate)) {
+                            if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
+                                timeTakenForEvents += tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR);
+                            }
+                            Log.d("timeSpent", String.valueOf(tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR)));
                         }
-                        Log.d("timeSpent", String.valueOf(tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR)) );
+                    } catch (ParseException pe) {
+                        pe.printStackTrace();
                     }
-                }  catch (ParseException pe) {
-                    pe.printStackTrace();
                 }
 
             }
-
-
 
         }
 
