@@ -65,7 +65,7 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<String> taskInputData = new ArrayList<String>(); //data that comes from the TaskInputScreen to be displayed
     ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();//title of each assignment
     List<String> usersEvents = new ArrayList<>();
-    ArrayList<Integer> selectedItemsList = new ArrayList<Integer>();
+    ListedItem currentlySelectedListItem;
     public View row;
 
     // <Izzy's variables>
@@ -111,17 +111,22 @@ public class MainActivity extends ActionBarActivity {
 
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                Integer position1 = position;
                 row = arg1;
                 if (row != null){
-                    if (!selectedItemsList.contains(position)){
-                        selectedItemsList.add(position);
-                        row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                    if (!listItems.get(position).isSelected()) {
+                        if (currentlySelectedListItem == null) {
+                            row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                        }
+                        else{
+                            listItems.get(listItems.indexOf(currentlySelectedListItem)).toggleSelection();
+                            row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                        }
                     }
                     else{
                         row.setBackgroundResource(0);
                     }
                 }
+                listItems.get(position).toggleSelection();
 
 
 //                v.setBackgroundResource(R)
@@ -192,12 +197,6 @@ public class MainActivity extends ActionBarActivity {
     public void clickedPlus(View v){
         lastClickedRowArray = new ArrayList<String>();
         goToTaskInputScreen();
-//        List<String> taskInputs = new ArrayList<String>();
-//        taskInputs.add("This");
-//        taskInputs.add("is");
-//        taskInputs.add("a");
-//        taskInputs.add("test");
-//        addToList(taskInputs);
     }
 
     public void addToListTest(View v){
@@ -219,23 +218,27 @@ public class MainActivity extends ActionBarActivity {
         Toast.makeText(this, Integer.toString(lastClickedRow), Toast.LENGTH_LONG).show();
     }
 
-    public void removeLastClickedRow(){
-        if (lastClickedRow != 10000){
-            listItems.remove(lastClickedRow);
-            adapter.notifyDataSetChanged();
-        }
-    }
 
-    public void deleteSelectedItems(View v){
-        for (int i : selectedItemsList){
-            listItems.remove(i);
-            Toast.makeText(this, Integer.toString(i), Toast.LENGTH_LONG).show();
+    public void deleteSelectedItem(View v){
+        for (ListedItem item: listItems){
+            if (item.isSelected()) {
+                listItems.remove(item);
+            }
         }
         Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         adapter.notifyDataSetChanged();
-        Toast.makeText(this,selectedItemsList.toString(),Toast.LENGTH_LONG).show();
-        selectedItemsList = new ArrayList<Integer>();
     }
+
+    public void editSelectedItem(View v){
+        for (ListedItem item: listItems){
+            if(item.isSelected()){
+                lastClickedRowArray = item.returnArrayList();
+                goToTaskInputScreen();
+            }
+        }
+    }
+    
+
 
 
     // <Izzy's Methods>

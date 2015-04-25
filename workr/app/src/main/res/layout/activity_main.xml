@@ -35,34 +35,47 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="40dp">
-
-            <ProgressBar
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/freeTimeProgressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_alignEnd="@+id/textViewProgress"
-                android:layout_below="@+id/textView"
-                android:layout_centerHorizontal="true"
-                android:layout_alignStart="@+id/textView" />
+                android:layout_centerVertical="true">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/freeTimeProgressBar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_alignEnd="@+id/textViewProgress"
+                        android:layout_below="@+id/textView"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignStart="@+id/textView" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="Free Time Till Next Monday: "
+                        android:id="@+id/textView"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Free Time Till Next Monday: "
-                android:id="@+id/textView"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/textViewProgress"
-                android:layout_alignTop="@+id/textView"
-                android:layout_toEndOf="@+id/textView"
-                android:text="0/0" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/textViewProgress"
+                        android:layout_alignTop="@+id/textView"
+                        android:layout_toEndOf="@+id/textView"
+                        android:text="0/0" />
+                </LinearLayout>
+            </LinearLayout>
 
         </RelativeLayout>
 
@@ -87,9 +100,16 @@
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/imageButton"
+                    android:onClick="editSelectedItem"
+                    android:src="@drawable/pencil" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:id="@+id/trashButton"
                     android:src="@drawable/trash"
-                    android:onClick="deleteSelectedItems"
+                    android:onClick="deleteSelectedItem"
                     android:layout_toRightOf="@+id/addTaskButton"/>
             </LinearLayout>
 
