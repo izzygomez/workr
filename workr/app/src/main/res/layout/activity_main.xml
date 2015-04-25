@@ -52,6 +52,26 @@
                         android:layout_below="@+id/textView"
                         android:layout_centerHorizontal="true"
                         android:layout_alignStart="@+id/textView" />
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/freeTimeProgressBar2"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_alignEnd="@+id/textViewProgress"
+                        android:layout_below="@+id/textView"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignStart="@+id/textView" />
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/freeTimeProgressBar3"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_alignEnd="@+id/textViewProgress"
+                        android:layout_below="@+id/textView"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignStart="@+id/textView" />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="wrap_content"
