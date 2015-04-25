@@ -17,6 +17,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
@@ -44,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -51,18 +53,20 @@ import java.util.Locale;
 import static com.izzygomez.workr.NotifyUser.calculateFreeTime;
 
 public class MainActivity extends ActionBarActivity {
-    ArrayList<String> listItems = new ArrayList<String>();
-    ArrayAdapter<String> adapter;
+    ArrayList<ListedItem> listItems = new ArrayList<ListedItem>();
+    ArrayAdapter<ListedItem> adapter;
     boolean deleteMode = false;
-    float oldX = Float.NaN;
-    float oldY = Float.NaN;
-    static final int DELTA = 50;
-    enum Direction{LEFT, RIGHT;}
+//    float oldX = Float.NaN;
+//    float oldY = Float.NaN;
+//    static final int DELTA = 50;
+//    enum Direction{LEFT, RIGHT;}
     int lastClickedRow = 10000;
-    ArrayList<String> lastClickedRowArray = new ArrayList<String>();
-    ArrayList<String> taskInputData = new ArrayList<String>();
-    ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();
+    ArrayList<String> lastClickedRowArray = new ArrayList<String>(); //Array of Strings to pass to TaskInputScreen to preload input boxes during edits
+    ArrayList<String> taskInputData = new ArrayList<String>(); //data that comes from the TaskInputScreen to be displayed
+    ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();//title of each assignment
     List<String> usersEvents = new ArrayList<>();
+    ArrayList<Integer> selectedItemsList = new ArrayList<Integer>();
+    public View row;
 
     // <Izzy's variables>
     /**
@@ -95,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
         mStatusText = (TextView) findViewById(R.id.mStatusText);
         mEventText = (TextView) findViewById(R.id.mEventText);
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
+        adapter = new ArrayAdapter<ListedItem>(this, android.R.layout.simple_list_item_1, listItems);
 
         adapter.notifyDataSetChanged();
         Log.d("listItems",listItems.toString());
@@ -107,51 +111,31 @@ public class MainActivity extends ActionBarActivity {
 
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                Integer position1 = position;
+                row = arg1;
+                if (row != null){
+                    if (!selectedItemsList.contains(position)){
+                        selectedItemsList.add(position);
+                        row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                    }
+                    else{
+                        row.setBackgroundResource(0);
+                    }
+                }
+
+
+//                v.setBackgroundResource(R)
                 lastClickedRow = position;
                 String[] lastClickedArrayString = arg0.getItemAtPosition(position).toString().split(" ");
                 lastClickedRowArray = new ArrayList<String>();
                 for(String s: lastClickedArrayString){
                     lastClickedRowArray.add(s);
                 }
-                goToTaskInputScreen();
-
-                if (deleteMode){
-                    arg0.getItemAtPosition(position);
-                    listItems.remove(position);
-                    adapter.notifyDataSetChanged();
-                }
-            arg0.getItemAtPosition(position);
             }
         });
-        taskListView.setOnTouchListener(new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View v, MotionEvent event){
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        oldX = event.getX();
-                        oldY = event.getY();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (event.getX() - oldX < -DELTA) {
-                            //Right now this is basically swipe to delete, but maybe it would be better if it were swipe
-                            //to get the delete option so like a delete button appears in line, and then click that to delete
-                            //That way tasks are not accidentally deleted.
-                            removeLastClickedRow();
-                            Log.d("ran", "ran");
-                        } else if (event.getX() - oldX > DELTA) {
-                            removeLastClickedRow();
-                            Log.d("ran", "ran");
-                        }
-                        else{
-//                            goToTaskInputScreen();
-                        }
-                        break;
-                    default: return false;
-                }
-                return false;
-            }
 
-        });
+//
+//        });
 
 
         // IZZY'S CODE
@@ -197,10 +181,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void addToList(ArrayList<String> taskInputs){
-        String listViewInput = "";
-        for (String input: taskInputs){
-            listViewInput += input + " ";
-        }
+        ListedItem listViewInput = new ListedItem(taskInputs.get(0), taskInputs.get(1), taskInputs.get(2), taskInputs.get(3));
         if(!(listItems.contains(listViewInput))) {
             listItems.add(listViewInput);
             adapter.notifyDataSetChanged();
@@ -243,6 +224,17 @@ public class MainActivity extends ActionBarActivity {
             listItems.remove(lastClickedRow);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    public void deleteSelectedItems(View v){
+        for (int i : selectedItemsList){
+            listItems.remove(i);
+            Toast.makeText(this, Integer.toString(i), Toast.LENGTH_LONG).show();
+        }
+        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
+        adapter.notifyDataSetChanged();
+        Toast.makeText(this,selectedItemsList.toString(),Toast.LENGTH_LONG).show();
+        selectedItemsList = new ArrayList<Integer>();
     }
 
 

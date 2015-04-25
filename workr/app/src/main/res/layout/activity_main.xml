@@ -1,3 +1,4 @@
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -42,6 +43,7 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_alignEnd="@+id/textViewProgress"
                 android:layout_below="@+id/textView"
+                android:layout_centerHorizontal="true"
                 android:layout_alignStart="@+id/textView" />
 
             <TextView
@@ -87,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/trashButton"
                     android:src="@drawable/trash"
-                    android:onClick="setDeleteMode"
+                    android:onClick="deleteSelectedItems"
                     android:layout_toRightOf="@+id/addTaskButton"/>
             </LinearLayout>
 
@@ -114,6 +116,7 @@
         android:text="No events retrieved yet"
         android:id="@+id/mEventText"
         android:visibility="invisible" />
+
 
 </RelativeLayout>
 
