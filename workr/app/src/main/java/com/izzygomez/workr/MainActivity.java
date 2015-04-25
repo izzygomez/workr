@@ -472,31 +472,58 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void calcFreeTime() {
-        Calendar endOfTheWeek = Calendar.getInstance();
-        endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        endOfTheWeek.add(Calendar.DATE,7);
-        int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
+        calcFreeTimeForToday();
+//        calcFreeTimeForThisWeek();
+    }
 
-        ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
-        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
-            if (!assignment.getDueDate().after(endOfTheWeek) && !Calendar.getInstance().after(assignment.getDueDate())) {
-                assignmentsDueBeforeMonday.add(assignment);
+    public void calcFreeTimeForToday() {
+        Calendar today = Calendar.getInstance();
+//        endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+//        endOfTheWeek.add(Calendar.DATE,7);
+        int totalTimeToday = NotifyUser.calculateTotalTime(today);
+        ArrayList<Assignment> assignmentsDueToday = new ArrayList<>();
+        for (Assignment assignment : usersAssignments) {
+            if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH) &&
+                assignment.getDueDate().get(Calendar.MONTH) == today.get(Calendar.MONTH)) {
+                assignmentsDueToday.add(assignment);
             }
         }
-
-
-        int freeTime = parseEventList(totalTimeThisWeek);
-//        Log.d("FreeTime", String.valueOf(freeTime));
-        int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
-        Log.d("TryAgain", String.valueOf(freeTime));
-
+        Log.d("totalTimeToday", String.valueOf(totalTimeToday));
+        int freeTime = parseEventList(totalTimeToday, today);
+        int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueToday);
+        Log.d("freeTime",String.valueOf(freeTime));
+        Log.d("freeTimeLeft", String.valueOf(freeTimeLeft));
 
         ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
     }
 
-    public int parseEventList(int freeTime)  {
+    public void calcFreeTimeForThisWeek() {
+        Calendar endOfTheWeek = Calendar.getInstance();
+        endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        endOfTheWeek.add(Calendar.DATE,7);
+        int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
+        ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
+        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
+            if (!assignment.getDueDate().after(endOfTheWeek) && !Calendar.getInstance().after(assignment.getDueDate())) {
+                assignmentsDueBeforeMonday.add(assignment);
+            }
+        }
+        int freeTime = parseEventList(totalTimeThisWeek, endOfTheWeek);
+        int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
+
+
+//        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
+//        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
+//        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
+    }
+
+    public void calcFreeTimeForNextSevenDays() {
+
+    }
+
+    public int parseEventList(int freeTime, Calendar finalDate)  {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
         SimpleDateFormat cal = new SimpleDateFormat("yyyy-MM-dd");
         Calendar tempCal = Calendar.getInstance();
@@ -525,11 +552,21 @@ public class MainActivity extends ActionBarActivity {
                         Date endDate = sdf.parse(end);
                         tempEnd.setTime(endDate);
 
-                        if (!Calendar.getInstance().after(startDate)) {
+                        if (!(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) > tempStart.get(Calendar.DAY_OF_MONTH)) &&
+                                !(finalDate.get(Calendar.DAY_OF_MONTH) < tempStart.get(Calendar.DAY_OF_MONTH))) {
+                            Log.d("hi","ok");
                             if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
-                                timeTakenForEvents += tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR);
+                                timeTakenForEvents += tempEnd.get(Calendar.HOUR_OF_DAY) - tempStart.get(Calendar.HOUR_OF_DAY);
+
+                            } else {
+                                Log.d("hi",String.valueOf(tempStart.get(Calendar.HOUR_OF_DAY)));
+                                timeTakenForEvents += 24 - tempStart.get(Calendar.HOUR_OF_DAY);
+
                             }
-                            Log.d("timeSpent", String.valueOf(tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR)));
+
+//                            Log.d("start", String.valueOf(tempStart.get(Calendar.HOUR)));
+//                            Log.d("End", String.valueOf(tempEnd.get(Calendar.HOUR_OF_DAY)));
+//                            Log.d("timeSpent", String.valueOf(tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR)));
                         }
                     } catch (ParseException pe) {
                         pe.printStackTrace();
