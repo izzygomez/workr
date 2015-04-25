@@ -33,14 +33,34 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="40dp">
 
             <ProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="75dp"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/freeTimeProgressBar" />
+                android:layout_height="wrap_content"
+                android:id="@+id/freeTimeProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_alignEnd="@+id/textViewProgress"
+                android:layout_below="@+id/textView"
+                android:layout_alignStart="@+id/textView" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Free Time Till Next Monday: "
+                android:id="@+id/textView"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/textViewProgress"
+                android:layout_alignTop="@+id/textView"
+                android:layout_toEndOf="@+id/textView"
+                android:text="0/0" />
 
         </RelativeLayout>
 

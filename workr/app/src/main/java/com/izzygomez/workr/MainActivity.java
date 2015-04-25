@@ -31,14 +31,24 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import static com.izzygomez.workr.NotifyUser.calculateFreeTime;
 
 public class MainActivity extends ActionBarActivity {
     ArrayList<String> listItems = new ArrayList<String>();
@@ -51,8 +61,8 @@ public class MainActivity extends ActionBarActivity {
     int lastClickedRow = 10000;
     ArrayList<String> lastClickedRowArray = new ArrayList<String>();
     ArrayList<String> taskInputData = new ArrayList<String>();
-
-
+    ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();
+    List<String> usersEvents = new ArrayList<>();
 
     // <Izzy's variables>
     /**
@@ -84,7 +94,6 @@ public class MainActivity extends ActionBarActivity {
 
         mStatusText = (TextView) findViewById(R.id.mStatusText);
         mEventText = (TextView) findViewById(R.id.mEventText);
-
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
 
@@ -93,6 +102,8 @@ public class MainActivity extends ActionBarActivity {
 //        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         taskListView.setAdapter(adapter);
 
+        // PHILLY'S CODE
+        calcFreeTime();
 
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
@@ -155,6 +166,7 @@ public class MainActivity extends ActionBarActivity {
                 transport, jsonFactory, credential)
                 .setApplicationName("Workr")
                 .build();
+
     }
     public void goToTaskInputScreen(){
         Intent taskInputIntent = new Intent(this, TaskInputScreen.class);
@@ -244,6 +256,7 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
         if (isGooglePlayServicesAvailable()) {
             refreshEventList();
+
         } else {
             mStatusText.setText("Google Play Services required: " +
                     "after installing, close and relaunch this app.");
@@ -262,6 +275,8 @@ public class MainActivity extends ActionBarActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy"); // or mm/dd/yy or assume 2015?
 
         if ((requestCode == 5) &&
                 (resultCode == RESULT_OK)) {
@@ -270,15 +285,34 @@ public class MainActivity extends ActionBarActivity {
             Log.d("taskInputData", taskInputData.toString());
 //            listItems.remove(lastClickedRow);
 //            adapter.notifyDataSetChanged();
+            try {
+                cal.setTime(sdf.parse(taskInputData.get(2)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Boolean priority;
+            if (taskInputData.get(3) == "High" || taskInputData.get(3) == "high") {
+                priority = true;
+            } else {
+                priority = false;
+            }
+            Assignment newAssignment = new Assignment(taskInputData.get(0), Integer.parseInt(taskInputData.get(1)),
+                    cal , priority);
+            Log.d("newAssignment", newAssignment.toString());
+
             lastClickedRowArray = new ArrayList<String>();
             addToList(taskInputData);
+            usersAssignments.add(newAssignment);
+            calcFreeTime();
 
         }
+
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode == RESULT_OK) {
                     refreshEventList();
+
                 } else {
                     isGooglePlayServicesAvailable();
                 }
@@ -324,6 +358,7 @@ public class MainActivity extends ActionBarActivity {
         } else {
             if (isDeviceOnline()) {
                 new EventFetchTask(this).execute();
+
             } else {
                 mStatusText.setText("No network connection available.");
             }
@@ -352,6 +387,8 @@ public class MainActivity extends ActionBarActivity {
      * @param eventStrings a List of Strings to populate the event display with.
      */
     public void updateEventList(final List<String> eventStrings) {
+        usersEvents = eventStrings;
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -437,5 +474,79 @@ public class MainActivity extends ActionBarActivity {
                 dialog.show();
             }
         });
+    }
+
+    public void calcFreeTime() {
+        Calendar endOfTheWeek = Calendar.getInstance();
+        endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        endOfTheWeek.add(Calendar.DATE,7);
+        int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
+
+        ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
+        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
+            if (!assignment.getDueDate().after(endOfTheWeek) && !Calendar.getInstance().after(assignment.getDueDate())) {
+                assignmentsDueBeforeMonday.add(assignment);
+            }
+        }
+
+
+        int freeTime = parseEventList(totalTimeThisWeek);
+//        Log.d("FreeTime", String.valueOf(freeTime));
+        int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
+        Log.d("TryAgain", String.valueOf(freeTime));
+
+
+        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
+    }
+
+    public int parseEventList(int freeTime)  {
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        SimpleDateFormat cal = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar tempCal = Calendar.getInstance();
+        int timeTakenForEvents = 0;
+
+        if (usersEvents.size() > 0) {
+
+            Log.d("events", usersEvents.toString());
+            for( String event : usersEvents) {
+                Calendar tempStart = Calendar.getInstance();
+                Calendar tempEnd = Calendar.getInstance();
+
+                String tempEvent = event.substring(event.indexOf("(")+1,event.lastIndexOf(")")-1);
+                String start = tempEvent.substring(0, tempEvent.indexOf(","));
+                start = start.substring(0, start.lastIndexOf("."));
+                start = start.replace("T", " ");
+                String end = tempEvent.substring(tempEvent.lastIndexOf(",") + 1, tempEvent.lastIndexOf("."));
+                end = end.replace("T", " ");
+
+                try{
+
+                    Date startDate =  sdf.parse(start);
+                    tempStart.setTime(startDate);
+
+                    Date endDate = sdf.parse(end);
+                    tempEnd.setTime(endDate);
+
+                    if (!Calendar.getInstance().after(startDate)) {
+                        if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
+                            timeTakenForEvents += tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR);
+                        }
+                        Log.d("timeSpent", String.valueOf(tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR)) );
+                    }
+                }  catch (ParseException pe) {
+                    pe.printStackTrace();
+                }
+
+            }
+
+
+
+        }
+
+        Log.d("timeTaken", String.valueOf(timeTakenForEvents));
+
+        return freeTime - timeTakenForEvents;
     }
 }

@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.EditText;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public class TaskInputScreen extends ActionBarActivity {
     ArrayList<String> passedData = new ArrayList<String>();
     EditText assignmentText;
     EditText completionTimeText;
-    DatePicker dueDateText;
+    EditText dueDateText;
     EditText priorityText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +24,7 @@ public class TaskInputScreen extends ActionBarActivity {
         setContentView(R.layout.activity_task_input_screen);
         assignmentText = (EditText) findViewById(R.id.editText5);
         completionTimeText = (EditText) findViewById(R.id.editText6);
-        dueDateText = (DatePicker) findViewById(R.id.datePicker);
+        dueDateText = (EditText) findViewById(R.id.editText7);
         priorityText = (EditText) findViewById(R.id.editText8);
 
         Bundle extras = getIntent().getExtras();
@@ -37,11 +36,7 @@ public class TaskInputScreen extends ActionBarActivity {
         if (passedData.size() != 0){
             assignmentText.setText(passedData.get(0));
             completionTimeText.setText(passedData.get(1));
-            dueDateText.updateDate(
-                    Integer.parseInt(passedData.get(2).split("/")[0]),
-                    Integer.parseInt(passedData.get(2).split("/")[1]),
-                    Integer.parseInt(passedData.get(2).split("/")[2])
-            );
+            dueDateText.setText(passedData.get(2));
             priorityText.setText(passedData.get(3));
         }
     }
@@ -51,7 +46,7 @@ public class TaskInputScreen extends ActionBarActivity {
 
         returnData.add(assignmentText.getText().toString());
         returnData.add(completionTimeText.getText().toString());
-        returnData.add(Integer.toString(dueDateText.getMonth())+"/"+Integer.toString(dueDateText.getDayOfMonth())+"/"+Integer.toString(dueDateText.getYear()));
+        returnData.add(dueDateText.getText().toString());
         returnData.add(priorityText.getText().toString());
 
         addToList(returnData);
