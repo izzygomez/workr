@@ -473,13 +473,12 @@ public class MainActivity extends ActionBarActivity {
 
     public void calcFreeTime() {
         calcFreeTimeForToday();
-//        calcFreeTimeForThisWeek();
+        calcFreeTimeForThisWeek();
+        calcFreeTimeForNextSevenDays();
     }
 
     public void calcFreeTimeForToday() {
         Calendar today = Calendar.getInstance();
-//        endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-//        endOfTheWeek.add(Calendar.DATE,7);
         int totalTimeToday = NotifyUser.calculateTotalTime(today);
         ArrayList<Assignment> assignmentsDueToday = new ArrayList<>();
         for (Assignment assignment : usersAssignments) {
@@ -506,7 +505,8 @@ public class MainActivity extends ActionBarActivity {
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
         for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
-            if (!assignment.getDueDate().after(endOfTheWeek) && !Calendar.getInstance().after(assignment.getDueDate())) {
+            if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == endOfTheWeek.get(Calendar.DAY_OF_MONTH) &&
+                    assignment.getDueDate().get(Calendar.MONTH) == endOfTheWeek.get(Calendar.MONTH)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
         }
@@ -514,19 +514,34 @@ public class MainActivity extends ActionBarActivity {
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
 
 
-//        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
-//        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
-//        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
+        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
     }
 
     public void calcFreeTimeForNextSevenDays() {
+        Calendar nextWeek = Calendar.getInstance();
+        nextWeek.roll(Calendar.DAY_OF_MONTH,7);
+        int totalTimeThisWeek = NotifyUser.calculateTotalTime(nextWeek);
+        ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
+        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
+            if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == nextWeek.get(Calendar.DAY_OF_MONTH) &&
+                    assignment.getDueDate().get(Calendar.MONTH) == nextWeek.get(Calendar.MONTH)) {
+                assignmentsDueBeforeMonday.add(assignment);
+            }
+        }
+        int freeTime = parseEventList(totalTimeThisWeek, nextWeek);
+        int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
+
+        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
 
     }
 
     public int parseEventList(int freeTime, Calendar finalDate)  {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
-        SimpleDateFormat cal = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar tempCal = Calendar.getInstance();
+
         int timeTakenForEvents = 0;
 
         if (usersEvents.size() > 0) {
@@ -564,9 +579,6 @@ public class MainActivity extends ActionBarActivity {
 
                             }
 
-//                            Log.d("start", String.valueOf(tempStart.get(Calendar.HOUR)));
-//                            Log.d("End", String.valueOf(tempEnd.get(Calendar.HOUR_OF_DAY)));
-//                            Log.d("timeSpent", String.valueOf(tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR)));
                         }
                     } catch (ParseException pe) {
                         pe.printStackTrace();
