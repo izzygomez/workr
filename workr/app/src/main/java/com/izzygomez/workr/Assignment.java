@@ -57,7 +57,7 @@ public class Assignment {
     }
 
     @Override public String toString() {
-        return "Assignment: " + subject + " - Estimated Time: " + estimatedTime + " Due Date: " + sdf.format(dueDate.getTime()) + " High Priority? " + highPriority;
+        return subject + " : " + estimatedTime + " : " + sdf.format(dueDate.getTime()) + " : " + highPriority;
     }
 
 }
