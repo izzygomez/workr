@@ -39,6 +39,8 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -97,13 +99,14 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        populateListItemsFromFile();
         mStatusText = (TextView) findViewById(R.id.mStatusText);
         mEventText = (TextView) findViewById(R.id.mEventText);
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
         adapter = new ArrayAdapter<ListedItem>(this, android.R.layout.simple_list_item_1, listItems);
 
         adapter.notifyDataSetChanged();
+        updateStorage();
         Log.d("listItems",listItems.toString());
 //        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         taskListView.setAdapter(adapter);
@@ -201,6 +204,7 @@ public class MainActivity extends ActionBarActivity {
         ListedItem listViewInput = new ListedItem(taskInputs.get(0), taskInputs.get(1), taskInputs.get(2), taskInputs.get(3));
         listItems.add(listViewInput);
         adapter.notifyDataSetChanged();
+        updateStorage();
         lastClickedRowArray = taskInputs;
 
     }
@@ -232,6 +236,7 @@ public class MainActivity extends ActionBarActivity {
         currentlySelectedRow.setBackgroundResource(0);
         Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         adapter.notifyDataSetChanged();
+        updateStorage();
     }
 
     public void editSelectedItem(View v){
@@ -240,6 +245,46 @@ public class MainActivity extends ActionBarActivity {
                 lastClickedRowArray = item.returnArrayList();
                 goToTaskInputScreen();
             }
+        }
+    }
+
+    public void updateStorage(){
+        String FILENAME = "workr_file";
+        deleteFile(FILENAME);
+        String line = "";
+        try {
+            FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            for (ListedItem item : listItems) {
+                line = item.toString() + "\n";
+                fos.write(line.getBytes());
+            }
+            fos.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    //Remember to add some check that makes sure that you can't use colons in any of your task entries or transform them to something
+    //else internally
+    public void populateListItemsFromFile(){
+        StringBuilder builder = new StringBuilder();
+        int ch;
+        String[] listItemsToStringArray;
+        try{
+            FileInputStream fis = openFileInput("workr_file");
+            while((ch = fis.read()) != -1){
+                builder.append((char)ch);
+            }
+            if (builder.toString().length() > 0) {
+                listItemsToStringArray = builder.toString().split("\n");
+                for (String listEntry : listItemsToStringArray) {
+                    String[] listEntryParts = listEntry.split(" : ");
+                    listItems.add(new ListedItem(listEntryParts[0], listEntryParts[1], listEntryParts[2], listEntryParts[3]));
+                }
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
         }
     }
     
@@ -305,6 +350,7 @@ public class MainActivity extends ActionBarActivity {
                 currentlySelectedListItem = null;
                 currentlySelectedRow.setBackgroundResource(0);
                 adapter.notifyDataSetChanged();
+                updateStorage();
             }
             usersAssignments.add(newAssignment);
             calcFreeTime();
