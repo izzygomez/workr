@@ -66,6 +66,7 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();//title of each assignment
     List<String> usersEvents = new ArrayList<>();
     ListedItem currentlySelectedListItem;
+    View currentlySelectedRow;
     public View row;
 
     // <Izzy's variables>
@@ -116,17 +117,27 @@ public class MainActivity extends ActionBarActivity {
                     if (!listItems.get(position).isSelected()) {
                         if (currentlySelectedListItem == null) {
                             row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                            currentlySelectedListItem = listItems.get(position);
+                            currentlySelectedRow = arg1;
+
                         }
                         else{
                             listItems.get(listItems.indexOf(currentlySelectedListItem)).toggleSelection();
+                            currentlySelectedRow.setBackgroundResource(0);
                             row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                            currentlySelectedListItem = listItems.get(position);
+                            currentlySelectedRow = arg1;
                         }
+
                     }
                     else{
                         row.setBackgroundResource(0);
+                        currentlySelectedListItem = null;
+//                        currentlySelectedRow = null;
                     }
                 }
                 listItems.get(position).toggleSelection();
+                Log.d("selected", Boolean.toString(listItems.get(position).isSelected()));
 
 
 //                v.setBackgroundResource(R)
@@ -208,16 +219,6 @@ public class MainActivity extends ActionBarActivity {
         addToList(taskInputs);
     }
 
-    public void setDeleteMode(View v){
-        if (deleteMode){
-            deleteMode = false;
-        }
-        else{
-            deleteMode = true;
-        }
-        Toast.makeText(this, Integer.toString(lastClickedRow), Toast.LENGTH_LONG).show();
-    }
-
 
     public void deleteSelectedItem(View v){
         for (ListedItem item: listItems){
@@ -225,6 +226,8 @@ public class MainActivity extends ActionBarActivity {
                 listItems.remove(item);
             }
         }
+        currentlySelectedListItem = null;
+        currentlySelectedRow = null;
         Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         adapter.notifyDataSetChanged();
     }

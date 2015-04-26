@@ -34,49 +34,12 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="40dp">
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true">
+            android:layout_height="80dp">
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <ProgressBar
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_alignEnd="@+id/textViewProgress"
-                        android:layout_below="@+id/textView"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignStart="@+id/textView" />
-
-                    <ProgressBar
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar2"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_alignEnd="@+id/textViewProgress"
-                        android:layout_below="@+id/textView"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignStart="@+id/textView" />
-
-                    <ProgressBar
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar3"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_alignEnd="@+id/textViewProgress"
-                        android:layout_below="@+id/textView"
-                        android:layout_centerHorizontal="true"
-                        android:layout_alignStart="@+id/textView" />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    >
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -94,8 +57,34 @@
                         android:layout_alignTop="@+id/textView"
                         android:layout_toEndOf="@+id/textView"
                         android:text="0/0" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/freeTimeProgressBar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_centerHorizontal="true"/>
+
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/freeTimeProgressBar2"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_below="@+id/freeTimeProgressBar"
+                            android:layout_centerHorizontal="true"/>
+
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/freeTimeProgressBar3"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_below="@+id/freeTimeProgressBar2"
+                            android:layout_centerHorizontal="true"/>
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
         </RelativeLayout>
 
