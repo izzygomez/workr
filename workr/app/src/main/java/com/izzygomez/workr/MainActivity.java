@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.SyncStateContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -198,15 +199,15 @@ public class MainActivity extends ActionBarActivity {
 
     public void addToList(ArrayList<String> taskInputs){
         ListedItem listViewInput = new ListedItem(taskInputs.get(0), taskInputs.get(1), taskInputs.get(2), taskInputs.get(3));
-        if(!(listItems.contains(listViewInput))) {
-            listItems.add(listViewInput);
-            adapter.notifyDataSetChanged();
-            lastClickedRowArray = taskInputs;
-        }
+        listItems.add(listViewInput);
+        adapter.notifyDataSetChanged();
+        lastClickedRowArray = taskInputs;
+
     }
 
     public void clickedPlus(View v){
         lastClickedRowArray = new ArrayList<String>();
+        currentlySelectedListItem = null;
         goToTaskInputScreen();
     }
 
@@ -221,13 +222,14 @@ public class MainActivity extends ActionBarActivity {
 
 
     public void deleteSelectedItem(View v){
-        for (ListedItem item: listItems){
-            if (item.isSelected()) {
-                listItems.remove(item);
-            }
-        }
+        listItems.remove(currentlySelectedListItem);
+//        for (ListedItem item: listItems){
+//            if (item.isSelected()) {
+//                listItems.remove(item);
+//            }
+//        }
         currentlySelectedListItem = null;
-        currentlySelectedRow = null;
+        currentlySelectedRow.setBackgroundResource(0);
         Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         adapter.notifyDataSetChanged();
     }
@@ -281,8 +283,6 @@ public class MainActivity extends ActionBarActivity {
 
             taskInputData = data.getExtras().getStringArrayList("returnData");
             Log.d("taskInputData", taskInputData.toString());
-//            listItems.remove(lastClickedRow);
-//            adapter.notifyDataSetChanged();
             try {
                 cal.setTime(sdf.parse(taskInputData.get(2)));
             } catch (ParseException e) {
@@ -300,6 +300,12 @@ public class MainActivity extends ActionBarActivity {
 
             lastClickedRowArray = new ArrayList<String>();
             addToList(taskInputData);
+            if (currentlySelectedListItem != null) {
+                listItems.remove(currentlySelectedListItem);
+                currentlySelectedListItem = null;
+                currentlySelectedRow.setBackgroundResource(0);
+                adapter.notifyDataSetChanged();
+            }
             usersAssignments.add(newAssignment);
             calcFreeTime();
 
