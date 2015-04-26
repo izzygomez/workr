@@ -1,3 +1,4 @@
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -33,34 +34,57 @@
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="40dp">
+            android:layout_height="80dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="Free Time Till Next Monday: "
+                        android:id="@+id/textView"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true" />
 
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/freeTimeProgressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_alignEnd="@+id/textViewProgress"
-                android:layout_below="@+id/textView"
-                android:layout_alignStart="@+id/textView" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/textViewProgress"
+                        android:layout_alignTop="@+id/textView"
+                        android:layout_toEndOf="@+id/textView"
+                        android:text="0/0" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/freeTimeProgressBar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_centerHorizontal="true"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Free Time Till Next Monday: "
-                android:id="@+id/textView"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/freeTimeProgressBar2"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_below="@+id/freeTimeProgressBar"
+                            android:layout_centerHorizontal="true"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/textViewProgress"
-                android:layout_alignTop="@+id/textView"
-                android:layout_toEndOf="@+id/textView"
-                android:text="0/0" />
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/freeTimeProgressBar3"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_below="@+id/freeTimeProgressBar2"
+                            android:layout_centerHorizontal="true"/>
+                    </LinearLayout>
+                </LinearLayout>
 
         </RelativeLayout>
 
@@ -85,9 +109,16 @@
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/imageButton"
+                    android:onClick="editSelectedItem"
+                    android:src="@drawable/pencil" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:id="@+id/trashButton"
                     android:src="@drawable/trash"
-                    android:onClick="setDeleteMode"
+                    android:onClick="deleteSelectedItem"
                     android:layout_toRightOf="@+id/addTaskButton"/>
             </LinearLayout>
 
@@ -114,6 +145,7 @@
         android:text="No events retrieved yet"
         android:id="@+id/mEventText"
         android:visibility="invisible" />
+
 
 </RelativeLayout>
 

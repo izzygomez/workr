@@ -17,8 +17,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.SyncStateContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -44,6 +46,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -51,18 +54,21 @@ import java.util.Locale;
 import static com.izzygomez.workr.NotifyUser.calculateFreeTime;
 
 public class MainActivity extends ActionBarActivity {
-    ArrayList<String> listItems = new ArrayList<String>();
-    ArrayAdapter<String> adapter;
+    ArrayList<ListedItem> listItems = new ArrayList<ListedItem>();
+    ArrayAdapter<ListedItem> adapter;
     boolean deleteMode = false;
-    float oldX = Float.NaN;
-    float oldY = Float.NaN;
-    static final int DELTA = 50;
-    enum Direction{LEFT, RIGHT;}
+//    float oldX = Float.NaN;
+//    float oldY = Float.NaN;
+//    static final int DELTA = 50;
+//    enum Direction{LEFT, RIGHT;}
     int lastClickedRow = 10000;
-    ArrayList<String> lastClickedRowArray = new ArrayList<String>();
-    ArrayList<String> taskInputData = new ArrayList<String>();
-    ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();
+    ArrayList<String> lastClickedRowArray = new ArrayList<String>(); //Array of Strings to pass to TaskInputScreen to preload input boxes during edits
+    ArrayList<String> taskInputData = new ArrayList<String>(); //data that comes from the TaskInputScreen to be displayed
+    ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();//title of each assignment
     List<String> usersEvents = new ArrayList<>();
+    ListedItem currentlySelectedListItem;
+    View currentlySelectedRow;
+    public View row;
 
     // <Izzy's variables>
     /**
@@ -95,7 +101,7 @@ public class MainActivity extends ActionBarActivity {
         mStatusText = (TextView) findViewById(R.id.mStatusText);
         mEventText = (TextView) findViewById(R.id.mEventText);
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
+        adapter = new ArrayAdapter<ListedItem>(this, android.R.layout.simple_list_item_1, listItems);
 
         adapter.notifyDataSetChanged();
         Log.d("listItems",listItems.toString());
@@ -107,51 +113,46 @@ public class MainActivity extends ActionBarActivity {
 
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                row = arg1;
+                if (row != null){
+                    if (!listItems.get(position).isSelected()) {
+                        if (currentlySelectedListItem == null) {
+                            row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                            currentlySelectedListItem = listItems.get(position);
+                            currentlySelectedRow = arg1;
+
+                        }
+                        else{
+                            listItems.get(listItems.indexOf(currentlySelectedListItem)).toggleSelection();
+                            currentlySelectedRow.setBackgroundResource(0);
+                            row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                            currentlySelectedListItem = listItems.get(position);
+                            currentlySelectedRow = arg1;
+                        }
+
+                    }
+                    else{
+                        row.setBackgroundResource(0);
+                        currentlySelectedListItem = null;
+//                        currentlySelectedRow = null;
+                    }
+                }
+                listItems.get(position).toggleSelection();
+                Log.d("selected", Boolean.toString(listItems.get(position).isSelected()));
+
+
+//                v.setBackgroundResource(R)
                 lastClickedRow = position;
                 String[] lastClickedArrayString = arg0.getItemAtPosition(position).toString().split(" ");
                 lastClickedRowArray = new ArrayList<String>();
                 for(String s: lastClickedArrayString){
                     lastClickedRowArray.add(s);
                 }
-                goToTaskInputScreen();
-
-                if (deleteMode){
-                    arg0.getItemAtPosition(position);
-                    listItems.remove(position);
-                    adapter.notifyDataSetChanged();
-                }
-            arg0.getItemAtPosition(position);
             }
         });
-        taskListView.setOnTouchListener(new View.OnTouchListener(){
-            @Override
-            public boolean onTouch(View v, MotionEvent event){
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        oldX = event.getX();
-                        oldY = event.getY();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (event.getX() - oldX < -DELTA) {
-                            //Right now this is basically swipe to delete, but maybe it would be better if it were swipe
-                            //to get the delete option so like a delete button appears in line, and then click that to delete
-                            //That way tasks are not accidentally deleted.
-                            removeLastClickedRow();
-                            Log.d("ran", "ran");
-                        } else if (event.getX() - oldX > DELTA) {
-                            removeLastClickedRow();
-                            Log.d("ran", "ran");
-                        }
-                        else{
-//                            goToTaskInputScreen();
-                        }
-                        break;
-                    default: return false;
-                }
-                return false;
-            }
 
-        });
+//
+//        });
 
 
         // IZZY'S CODE
@@ -197,26 +198,17 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void addToList(ArrayList<String> taskInputs){
-        String listViewInput = "";
-        for (String input: taskInputs){
-            listViewInput += input + " ";
-        }
-        if(!(listItems.contains(listViewInput))) {
-            listItems.add(listViewInput);
-            adapter.notifyDataSetChanged();
-            lastClickedRowArray = taskInputs;
-        }
+        ListedItem listViewInput = new ListedItem(taskInputs.get(0), taskInputs.get(1), taskInputs.get(2), taskInputs.get(3));
+        listItems.add(listViewInput);
+        adapter.notifyDataSetChanged();
+        lastClickedRowArray = taskInputs;
+
     }
 
     public void clickedPlus(View v){
         lastClickedRowArray = new ArrayList<String>();
+        currentlySelectedListItem = null;
         goToTaskInputScreen();
-//        List<String> taskInputs = new ArrayList<String>();
-//        taskInputs.add("This");
-//        taskInputs.add("is");
-//        taskInputs.add("a");
-//        taskInputs.add("test");
-//        addToList(taskInputs);
     }
 
     public void addToListTest(View v){
@@ -228,22 +220,30 @@ public class MainActivity extends ActionBarActivity {
         addToList(taskInputs);
     }
 
-    public void setDeleteMode(View v){
-        if (deleteMode){
-            deleteMode = false;
-        }
-        else{
-            deleteMode = true;
-        }
-        Toast.makeText(this, Integer.toString(lastClickedRow), Toast.LENGTH_LONG).show();
+
+    public void deleteSelectedItem(View v){
+        listItems.remove(currentlySelectedListItem);
+//        for (ListedItem item: listItems){
+//            if (item.isSelected()) {
+//                listItems.remove(item);
+//            }
+//        }
+        currentlySelectedListItem = null;
+        currentlySelectedRow.setBackgroundResource(0);
+        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
+        adapter.notifyDataSetChanged();
     }
 
-    public void removeLastClickedRow(){
-        if (lastClickedRow != 10000){
-            listItems.remove(lastClickedRow);
-            adapter.notifyDataSetChanged();
+    public void editSelectedItem(View v){
+        for (ListedItem item: listItems){
+            if(item.isSelected()){
+                lastClickedRowArray = item.returnArrayList();
+                goToTaskInputScreen();
+            }
         }
     }
+    
+
 
 
     // <Izzy's Methods>
@@ -283,8 +283,6 @@ public class MainActivity extends ActionBarActivity {
 
             taskInputData = data.getExtras().getStringArrayList("returnData");
             Log.d("taskInputData", taskInputData.toString());
-//            listItems.remove(lastClickedRow);
-//            adapter.notifyDataSetChanged();
             try {
                 cal.setTime(sdf.parse(taskInputData.get(2)));
             } catch (ParseException e) {
@@ -302,6 +300,12 @@ public class MainActivity extends ActionBarActivity {
 
             lastClickedRowArray = new ArrayList<String>();
             addToList(taskInputData);
+            if (currentlySelectedListItem != null) {
+                listItems.remove(currentlySelectedListItem);
+                currentlySelectedListItem = null;
+                currentlySelectedRow.setBackgroundResource(0);
+                adapter.notifyDataSetChanged();
+            }
             usersAssignments.add(newAssignment);
             calcFreeTime();
 
@@ -477,23 +481,46 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void calcFreeTime() {
+        calcFreeTimeForToday();
+        calcFreeTimeForThisWeek();
+        calcFreeTimeForNextSevenDays();
+    }
+
+    public void calcFreeTimeForToday() {
+        Calendar today = Calendar.getInstance();
+        int totalTimeToday = NotifyUser.calculateTotalTime(today);
+        ArrayList<Assignment> assignmentsDueToday = new ArrayList<>();
+        for (Assignment assignment : usersAssignments) {
+            if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH) &&
+                assignment.getDueDate().get(Calendar.MONTH) == today.get(Calendar.MONTH)) {
+                assignmentsDueToday.add(assignment);
+            }
+        }
+        Log.d("totalTimeToday", String.valueOf(totalTimeToday));
+        int freeTime = parseEventList(totalTimeToday, today);
+        int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueToday);
+        Log.d("freeTime",String.valueOf(freeTime));
+        Log.d("freeTimeLeft", String.valueOf(freeTimeLeft));
+
+        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
+    }
+
+    public void calcFreeTimeForThisWeek() {
         Calendar endOfTheWeek = Calendar.getInstance();
         endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         endOfTheWeek.add(Calendar.DATE,7);
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
-
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
         for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
-            if (!assignment.getDueDate().after(endOfTheWeek) && !Calendar.getInstance().after(assignment.getDueDate())) {
+            if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == endOfTheWeek.get(Calendar.DAY_OF_MONTH) &&
+                    assignment.getDueDate().get(Calendar.MONTH) == endOfTheWeek.get(Calendar.MONTH)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
         }
-
-
-        int freeTime = parseEventList(totalTimeThisWeek);
-//        Log.d("FreeTime", String.valueOf(freeTime));
+        int freeTime = parseEventList(totalTimeThisWeek, endOfTheWeek);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
-        Log.d("TryAgain", String.valueOf(freeTime));
 
 
         ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
@@ -501,47 +528,73 @@ public class MainActivity extends ActionBarActivity {
         ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
     }
 
-    public int parseEventList(int freeTime)  {
+    public void calcFreeTimeForNextSevenDays() {
+        Calendar nextWeek = Calendar.getInstance();
+        nextWeek.roll(Calendar.DAY_OF_MONTH,7);
+        int totalTimeThisWeek = NotifyUser.calculateTotalTime(nextWeek);
+        ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
+        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
+            if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == nextWeek.get(Calendar.DAY_OF_MONTH) &&
+                    assignment.getDueDate().get(Calendar.MONTH) == nextWeek.get(Calendar.MONTH)) {
+                assignmentsDueBeforeMonday.add(assignment);
+            }
+        }
+        int freeTime = parseEventList(totalTimeThisWeek, nextWeek);
+        int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
+
+        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
+
+    }
+
+    public int parseEventList(int freeTime, Calendar finalDate)  {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
-        SimpleDateFormat cal = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar tempCal = Calendar.getInstance();
+
         int timeTakenForEvents = 0;
 
         if (usersEvents.size() > 0) {
-
             Log.d("events", usersEvents.toString());
             for( String event : usersEvents) {
-                Calendar tempStart = Calendar.getInstance();
-                Calendar tempEnd = Calendar.getInstance();
+                if (event.contains(":")) {
 
-                String tempEvent = event.substring(event.indexOf("(")+1,event.lastIndexOf(")")-1);
-                String start = tempEvent.substring(0, tempEvent.indexOf(","));
-                start = start.substring(0, start.lastIndexOf("."));
-                start = start.replace("T", " ");
-                String end = tempEvent.substring(tempEvent.lastIndexOf(",") + 1, tempEvent.lastIndexOf("."));
-                end = end.replace("T", " ");
+                    Calendar tempStart = Calendar.getInstance();
+                    Calendar tempEnd = Calendar.getInstance();
 
-                try{
+                    String tempEvent = event.substring(event.indexOf("(") + 1, event.lastIndexOf(")") - 1);
+                    String start = tempEvent.substring(0, tempEvent.indexOf(","));
+                    start = start.substring(0, start.lastIndexOf("."));
+                    start = start.replace("T", " ");
+                    String end = tempEvent.substring(tempEvent.lastIndexOf(",") + 1, tempEvent.lastIndexOf("."));
+                    end = end.replace("T", " ");
 
-                    Date startDate =  sdf.parse(start);
-                    tempStart.setTime(startDate);
+                    try {
 
-                    Date endDate = sdf.parse(end);
-                    tempEnd.setTime(endDate);
+                        Date startDate = sdf.parse(start);
+                        tempStart.setTime(startDate);
 
-                    if (!Calendar.getInstance().after(startDate)) {
-                        if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
-                            timeTakenForEvents += tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR);
+                        Date endDate = sdf.parse(end);
+                        tempEnd.setTime(endDate);
+
+                        if (!(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) > tempStart.get(Calendar.DAY_OF_MONTH)) &&
+                                !(finalDate.get(Calendar.DAY_OF_MONTH) < tempStart.get(Calendar.DAY_OF_MONTH))) {
+                            Log.d("hi","ok");
+                            if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
+                                timeTakenForEvents += tempEnd.get(Calendar.HOUR_OF_DAY) - tempStart.get(Calendar.HOUR_OF_DAY);
+
+                            } else {
+                                Log.d("hi",String.valueOf(tempStart.get(Calendar.HOUR_OF_DAY)));
+                                timeTakenForEvents += 24 - tempStart.get(Calendar.HOUR_OF_DAY);
+
+                            }
+
                         }
-                        Log.d("timeSpent", String.valueOf(tempEnd.get(Calendar.HOUR) - tempStart.get(Calendar.HOUR)) );
+                    } catch (ParseException pe) {
+                        pe.printStackTrace();
                     }
-                }  catch (ParseException pe) {
-                    pe.printStackTrace();
                 }
 
             }
-
-
 
         }
 
