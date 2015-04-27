@@ -60,7 +60,7 @@ public class TaskInputScreen extends ActionBarActivity {
         }
         if (dueDateText.getText().toString().length() == 0){
             Calendar today = Calendar.getInstance();
-            returnData.add(today.get(Calendar.MONTH ) + "/" + today.get(Calendar.DAY_OF_MONTH) + "/" + today.get(Calendar.YEAR));
+            returnData.add(Integer.toString(today.get(Calendar.MONTH) + 1) + "/" + today.get(Calendar.DAY_OF_MONTH) + "/" + today.get(Calendar.YEAR));
         }
         else{
             returnData.add(dueDateText.getText().toString());
