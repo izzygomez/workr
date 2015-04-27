@@ -219,23 +219,26 @@ public class MainActivity extends ActionBarActivity {
     public void deleteSelectedItem(View v){
         Assignment deletedAssignment = null;
         for (Assignment assignment: usersAssignments) {
-            if(currentlySelectedListItem.toString() == assignment.toString()) {
-                deletedAssignment = assignment;
-                usersAssignments.remove(usersAssignments.indexOf(assignment));
-                break;
+            if (currentlySelectedListItem != null) {
+                if (currentlySelectedListItem.toString() == assignment.toString()) {
+                    deletedAssignment = assignment;
+                    usersAssignments.remove(usersAssignments.indexOf(assignment));
+                    break;
+                }
             }
         }
-        usersAssignments.remove(usersAssignments.indexOf(deletedAssignment));
-
-        listItems.remove(currentlySelectedListItem);
+        if (deletedAssignment != null) {
+            usersAssignments.remove(usersAssignments.indexOf(deletedAssignment));
+        }
+        if(currentlySelectedListItem != null) {
+            listItems.remove(currentlySelectedListItem);
+        }
         calcFreeTime();
-//        for (ListedItem item: listItems){
-//            if (item.isSelected()) {
-//                listItems.remove(item);
-//            }
-//        }
+
         currentlySelectedListItem = null;
-        currentlySelectedRow.setBackgroundResource(0);
+        if (currentlySelectedRow != null) {
+            currentlySelectedRow.setBackgroundResource(0);
+        }
         Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         adapter.notifyDataSetChanged();
         updateStorage();
