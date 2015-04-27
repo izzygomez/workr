@@ -202,7 +202,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void clickedPlus(View v){
         lastClickedRowArray = new ArrayList<String>();
-        currentlySelectedListItem = null;
+
         goToTaskInputScreen();
     }
 
