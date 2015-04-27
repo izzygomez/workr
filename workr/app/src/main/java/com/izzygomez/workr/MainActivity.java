@@ -220,16 +220,20 @@ public class MainActivity extends ActionBarActivity {
         Assignment deletedAssignment = null;
         for (Assignment assignment: usersAssignments) {
             if (currentlySelectedListItem != null) {
-                if (currentlySelectedListItem.toString() == assignment.toString()) {
+                Log.d("current", currentlySelectedListItem.toString());
+                Log.d("assignment", assignment.toString());
+
+                if (currentlySelectedListItem.toString().equals(assignment.toString())) {
+                    Log.d("alright","ok");
                     deletedAssignment = assignment;
                     usersAssignments.remove(usersAssignments.indexOf(assignment));
                     break;
                 }
             }
         }
-        if (deletedAssignment != null) {
-            usersAssignments.remove(usersAssignments.indexOf(deletedAssignment));
-        }
+//        if (deletedAssignment != null) {
+//            usersAssignments.remove(usersAssignments.indexOf(deletedAssignment));
+//        }
         if(currentlySelectedListItem != null) {
             listItems.remove(currentlySelectedListItem);
         }
@@ -244,13 +248,31 @@ public class MainActivity extends ActionBarActivity {
         updateStorage();
     }
 
-    public void editSelectedItem(View v){
-        for (ListedItem item: listItems){
-            if(item.isSelected()){
-                lastClickedRowArray = item.returnArrayList();
-                goToTaskInputScreen();
+    public void editSelectedItem(View v) {
+        Assignment deletedAssignment = null;
+
+        for (ListedItem item : listItems) {
+            if (item.isSelected()) {
+                for (Assignment assignment : usersAssignments) {
+                    if (currentlySelectedListItem.toString().equals(assignment.toString())) {
+                            deletedAssignment = assignment;
+                            usersAssignments.remove(usersAssignments.indexOf(assignment));
+
+                            listItems.remove(currentlySelectedListItem);
+                            calcFreeTime();
+
+                            lastClickedRowArray = item.returnArrayList();
+
+                            break;
+                    }
+
+
+
+                }
             }
         }
+
+        goToTaskInputScreen();
     }
 
     public void updateStorage(){
@@ -262,6 +284,21 @@ public class MainActivity extends ActionBarActivity {
             for (ListedItem item : listItems) {
                 line = item.toString() + "\n";
                 fos.write(line.getBytes());
+            }
+            fos.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
+        String FILENAMEASSIGNMENT = "workr_file_assignments";
+        deleteFile(FILENAMEASSIGNMENT);
+        String lineAssignment = "";
+        try {
+            FileOutputStream fos = openFileOutput(FILENAMEASSIGNMENT, Context.MODE_PRIVATE);
+            for (Assignment item : usersAssignments) {
+                lineAssignment = item.toString() + "\n";
+                fos.write(lineAssignment.getBytes());
             }
             fos.close();
         }
@@ -291,10 +328,51 @@ public class MainActivity extends ActionBarActivity {
         catch(IOException e){
             e.printStackTrace();
         }
+        StringBuilder builderAssignment = new StringBuilder();
+        int chAssignment;
+        String[] listItemsToStringArrayAssignment;
+        try{
+            FileInputStream fis = openFileInput("workr_file_assignments");
+            while((chAssignment = fis.read()) != -1){
+                builderAssignment.append((char)chAssignment);
+            }
+            if (builderAssignment.toString().length() > 0) {
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy"); // or mm/dd/yy or assume 2015?
+
+
+                listItemsToStringArrayAssignment = builderAssignment.toString().split("\n");
+                for (String listEntry : listItemsToStringArrayAssignment) {
+                    String[] listEntryParts = listEntry.split(" : ");
+                    try {
+                        cal.setTime(sdf.parse(listEntryParts[2]));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    usersAssignments.add(new Assignment(listEntryParts[0], Integer.valueOf(listEntryParts[1]), cal, listEntryParts[3]));
+
+                }
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
     }
     
 
+    public Assignment createAssignment() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy"); // or mm/dd/yy or assume 2015?
 
+        try {
+            cal.setTime(sdf.parse(taskInputData.get(2)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Assignment newAssignment = new Assignment(taskInputData.get(0), Integer.parseInt(taskInputData.get(1)),
+                cal , taskInputData.get(3));
+        return newAssignment;
+    }
 
     // <Izzy's Methods>
     /**
@@ -325,28 +403,13 @@ public class MainActivity extends ActionBarActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy"); // or mm/dd/yy or assume 2015?
-
         if ((requestCode == 5) &&
                 (resultCode == RESULT_OK)) {
 
             taskInputData = data.getExtras().getStringArrayList("returnData");
-            Log.d("taskInputData", taskInputData.toString());
-            try {
-                cal.setTime(sdf.parse(taskInputData.get(2)));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            Boolean priority;
-            if (taskInputData.get(3) == "High" || taskInputData.get(3) == "high") {
-                priority = true;
-            } else {
-                priority = false;
-            }
-            Assignment newAssignment = new Assignment(taskInputData.get(0), Integer.parseInt(taskInputData.get(1)),
-                    cal , priority);
-            Log.d("newAssignment", newAssignment.toString());
+
+            Assignment newAssignment = createAssignment();
+
 
             lastClickedRowArray = new ArrayList<String>();
             addToList(taskInputData);
@@ -547,11 +610,8 @@ public class MainActivity extends ActionBarActivity {
                 assignmentsDueToday.add(assignment);
             }
         }
-        Log.d("totalTimeToday", String.valueOf(totalTimeToday));
         int freeTime = parseEventList(totalTimeToday, today);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueToday);
-        Log.d("freeTime",String.valueOf(freeTime));
-        Log.d("freeTimeLeft", String.valueOf(freeTimeLeft));
 
         ((TextView)findViewById(R.id.textViewToday)).setText(freeTimeLeft + "/" + freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setMax(freeTime);
@@ -561,13 +621,13 @@ public class MainActivity extends ActionBarActivity {
     public void calcFreeTimeForThisWeek() {
         Calendar endOfTheWeek = Calendar.getInstance();
         endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        Log.d("endofweek",String.valueOf(endOfTheWeek.get(Calendar.DAY_OF_MONTH)));
+
         endOfTheWeek.add(Calendar.DATE,7);
+        Log.d("endofweek",String.valueOf(endOfTheWeek.get(Calendar.DAY_OF_MONTH)));
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
         for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
-            if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == endOfTheWeek.get(Calendar.DAY_OF_MONTH) &&
-                    assignment.getDueDate().get(Calendar.MONTH) == endOfTheWeek.get(Calendar.MONTH)) {
+            if (!assignment.getDueDate().after(endOfTheWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
         }
@@ -582,13 +642,12 @@ public class MainActivity extends ActionBarActivity {
 
     public void calcFreeTimeForNextSevenDays() {
         Calendar nextWeek = Calendar.getInstance();
-        nextWeek.roll(Calendar.DAY_OF_MONTH, 7);
+        nextWeek.add(Calendar.DATE, 6);
         Log.d("weekDay", String.valueOf(nextWeek.get(Calendar.DAY_OF_MONTH)));
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(nextWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
         for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
-            if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == nextWeek.get(Calendar.DAY_OF_MONTH) &&
-                    assignment.getDueDate().get(Calendar.MONTH) == nextWeek.get(Calendar.MONTH)) {
+            if (!assignment.getDueDate().after(nextWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
         }
@@ -631,12 +690,10 @@ public class MainActivity extends ActionBarActivity {
 
                         if (!(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) > tempStart.get(Calendar.DAY_OF_MONTH)) &&
                                 !(finalDate.get(Calendar.DAY_OF_MONTH) < tempStart.get(Calendar.DAY_OF_MONTH))) {
-                            Log.d("hi","ok");
                             if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
                                 timeTakenForEvents += tempEnd.get(Calendar.HOUR_OF_DAY) - tempStart.get(Calendar.HOUR_OF_DAY);
 
                             } else {
-                                Log.d("hi",String.valueOf(tempStart.get(Calendar.HOUR_OF_DAY)));
                                 timeTakenForEvents += 24 - tempStart.get(Calendar.HOUR_OF_DAY);
 
                             }
@@ -651,7 +708,6 @@ public class MainActivity extends ActionBarActivity {
 
         }
 
-        Log.d("timeTaken", String.valueOf(timeTakenForEvents));
 
         return freeTime - timeTakenForEvents;
     }

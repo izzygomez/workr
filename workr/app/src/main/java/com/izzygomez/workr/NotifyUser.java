@@ -16,8 +16,8 @@ public class NotifyUser {
     int hourOfDayBegins = 8; // For 8 AM or w/e
     int hoursInADay = 24;
     Calendar projectDueDate = Calendar.getInstance();
-    Assignment assignmentOne = new Assignment("6.s198 Project 2 Beta", 15, projectDueDate,true);
-    Assignment assignmentTwo = new Assignment("6.s198 Project 4 Beta", 2, projectDueDate,true);
+    Assignment assignmentOne = new Assignment("6.s198 Project 2 Beta", 15, projectDueDate,"high");
+    Assignment assignmentTwo = new Assignment("6.s198 Project 4 Beta", 2, projectDueDate,"high");
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
     /*
@@ -46,10 +46,10 @@ public class NotifyUser {
         } else {
             // Hard coded to assume 31 days in the month, this is totally wrong
             // sketchy corner case of the end of the month
-            int daysLeftInMonth = 31 - currentTime.get(Calendar.DAY_OF_MONTH);
+            int daysLeftInMonth = 30 - currentTime.get(Calendar.DAY_OF_MONTH);
             int daysTillInNextMonth = timeTill.get(Calendar.DAY_OF_MONTH);
-            int daysInMonthsBetween = timeTill.get(Calendar.MONTH) - currentTime.get(Calendar.MONTH);
-            daysTill = daysLeftInMonth + daysTillInNextMonth + daysInMonthsBetween*31;
+            int monthsBetween = timeTill.get(Calendar.MONTH) - currentTime.get(Calendar.MONTH) - 1;
+            daysTill = daysLeftInMonth + daysTillInNextMonth + monthsBetween*30;
         }
 
         int numberOfTotalFreeHours = numberOfFreeHoursInDay + daysTill*(hoursInADay-hourOfDayBegins);
@@ -106,11 +106,12 @@ public class NotifyUser {
 
         int percentLeft = percentOfTimeLeft(currentAssignment);
 
-        if (currentAssignment.getHighPriority() && highPriorityIntervals.contains(percentLeft)) {
-            notifyUser = true;
-        } else if(lowPriorityIntervals.contains(percentLeft)) {
-            notifyUser = true;
-        }
+        notifyUser = true;
+//        if (currentAssignment.getHighPriority() && highPriorityIntervals.contains(percentLeft)) {
+//            notifyUser = true;
+//        } else if(lowPriorityIntervals.contains(percentLeft)) {
+//            notifyUser = true;
+//        }
 
         return notifyUser;
     }

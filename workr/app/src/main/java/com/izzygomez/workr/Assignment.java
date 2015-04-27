@@ -14,10 +14,10 @@ public class Assignment {
     private String subject;
     private int estimatedTime;
     private Calendar dueDate;
-    private Boolean highPriority;
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    private String highPriority;
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
 
-    public Assignment(String assignmentName, int timeToFinish, Calendar turnInDate, Boolean priority) {
+    public Assignment(String assignmentName, int timeToFinish, Calendar turnInDate, String priority) {
         this.subject = assignmentName;
         this.estimatedTime = timeToFinish;
         this.dueDate = turnInDate;
@@ -48,16 +48,18 @@ public class Assignment {
         this.dueDate = dueDate;
     }
 
-    public Boolean getHighPriority() {
+    public String getHighPriority() {
         return highPriority;
     }
 
-    public void setHighPriority(Boolean highPriority) {
+    public void setHighPriority(String highPriority) {
         this.highPriority = highPriority;
     }
 
     @Override public String toString() {
-        return subject + " : " + estimatedTime + " : " + sdf.format(dueDate.getTime()) + " : " + highPriority;
+        String string = subject + " : " + estimatedTime + " : " + sdf.format(dueDate.getTime()) + " : " + highPriority;
+
+        return string;
     }
 
 }
