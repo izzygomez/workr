@@ -203,6 +203,11 @@ public class MainActivity extends ActionBarActivity {
     public void clickedPlus(View v){
         lastClickedRowArray = new ArrayList<String>();
         currentlySelectedRow.setBackgroundResource(0);
+        for (ListedItem item: listItems){
+            if (item.isSelected()){
+                item.toggleSelection();
+            }
+        }
 
         currentlySelectedListItem = null;
 
