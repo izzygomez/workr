@@ -247,33 +247,22 @@ public class MainActivity extends ActionBarActivity {
         adapter.notifyDataSetChanged();
         updateStorage();
     }
-
-    public void editSelectedItem(View v) {
-        Assignment deletedAssignment = null;
-
-        for (ListedItem item : listItems) {
-            if (item.isSelected()) {
+    public void editSelectedItem(View v){
+        for (ListedItem item: listItems){
+            if(item.isSelected()){
                 for (Assignment assignment : usersAssignments) {
                     if (currentlySelectedListItem.toString().equals(assignment.toString())) {
-                            deletedAssignment = assignment;
-                            usersAssignments.remove(usersAssignments.indexOf(assignment));
-
-                            listItems.remove(currentlySelectedListItem);
-                            calcFreeTime();
-
-                            lastClickedRowArray = item.returnArrayList();
-
-                            break;
+                        usersAssignments.remove(usersAssignments.indexOf(assignment));
+                        calcFreeTime();
+                        break;
                     }
-
-
-
                 }
+                lastClickedRowArray = item.returnArrayList();
+                goToTaskInputScreen();
             }
         }
-
-        goToTaskInputScreen();
     }
+
 
     public void updateStorage(){
         String FILENAME = "workr_file";
@@ -358,7 +347,7 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
-    
+
 
     public Assignment createAssignment() {
         Calendar cal = Calendar.getInstance();
