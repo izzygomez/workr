@@ -202,7 +202,10 @@ public class MainActivity extends ActionBarActivity {
 
     public void clickedPlus(View v){
         lastClickedRowArray = new ArrayList<String>();
+        currentlySelectedRow.setBackgroundResource(0);
+
         currentlySelectedListItem = null;
+
         goToTaskInputScreen();
     }
 
