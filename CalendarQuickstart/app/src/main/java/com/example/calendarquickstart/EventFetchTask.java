@@ -66,44 +66,69 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
     private List<String> fetchEventsFromCalendar() throws IOException {
         // List the next 10 events from the primary calendar.
         DateTime now = new DateTime(System.currentTimeMillis());
-        List<String> eventStrings = new ArrayList<String>();
-        Events events = mActivity.mService.events().list("primary") // Was "primary"
+        DateTime aWeekFromNow = new DateTime(System.currentTimeMillis() + 604800000L);
+        List<Event> allEvents = new ArrayList<>();
+        List<String> eventStrings = new ArrayList<>();
+        //String pageToken = null;
+
+        // Find all Selected calendars (i.e. calendars that show up in GCal UI) from user
+        CalendarList calendarList = mActivity.mService.calendarList().list()
+                //setPageToken(pageToken).
+                .execute();
+        List<CalendarListEntry> allCalendars = calendarList.getItems();
+
+        for (CalendarListEntry calendarListEntry : allCalendars) {
+            if (calendarListEntry.isSelected()) {
+                Events events = mActivity.mService.events().list(calendarListEntry.getId())
+                        .setMaxResults(10)
+                        .setTimeMin(now)
+                        .setTimeMax(aWeekFromNow)
+                        .setOrderBy("startTime")
+                        .setSingleEvents(true)
+                        .execute();
+                allEvents.addAll(events.getItems());
+            }
+        }
+        //pageToken = calendarList.getNextPageToken();
+
+       /* Events events = mActivity.mService.events().list("primary") // Usage: list(***calendarId***)
                 .setMaxResults(10)
                 .setTimeMin(now)
+                .setTimeMax(aWeekFromNow)
                 .setOrderBy("startTime")
                 .setSingleEvents(true)
                 .execute();
-        List<Event> items = events.getItems();
+        allEvents.addAll(events.getItems());*/
 
-        for (Event event : items) {
+        for (Event event : allEvents) {
             DateTime start = event.getStart().getDateTime();
             if (start == null) {
                 // All-day events don't have start times, so just use
                 // the start date.
-                start = event.getStart().getDate();
+                continue;
+                //start = event.getStart().getDate();
             }
             eventStrings.add(
                     String.format("%s (%s)", event.getSummary(), start));
         }
 
         // CalendarListEntry Testing
-        String pageToken = null;
-        do {
-            CalendarList calendarList = mActivity.mService.calendarList().list().
-                    setPageToken(pageToken).
-                    setShowHidden(Boolean.FALSE).
-                    setShowDeleted(Boolean.FALSE).
-                    execute();
-            List<CalendarListEntry> otherItems = calendarList.getItems();
-
-            for (CalendarListEntry calendarListEntry : otherItems) {
-                if (calendarListEntry.isSelected()) {
-                    System.out.println(calendarListEntry.getSummary());
-                    System.out.println(calendarListEntry.getId());
-                }
-            }
-            pageToken = calendarList.getNextPageToken();
-        } while (pageToken != null);
+//        String pageToken = null;
+//        do {
+//            CalendarList calendarList = mActivity.mService.calendarList().list().
+//                    setPageToken(pageToken).
+//                    execute();
+//            List<CalendarListEntry> allCalendars = calendarList.getItems();
+//
+//            for (CalendarListEntry calendarListEntry : allCalendars) {
+//                if (calendarListEntry.isSelected()) {
+//                    //System.out.println(calendarListEntry.getSummary());
+//                    //System.out.println(calendarListEntry.getId());
+//
+//                }
+//            }
+//            pageToken = calendarList.getNextPageToken();
+//        } while (pageToken != null);
         // </Testing>
 
         return eventStrings;
