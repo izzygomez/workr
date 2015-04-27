@@ -53,8 +53,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
+<<<<<<< Updated upstream
                         android:text="Free Time Till Next Monday: "
                         android:textSize="@dimen/abc_text_size_medium_material"
+=======
+                        android:text="Today: "
+>>>>>>> Stashed changes
                         android:id="@+id/textView"
                         android:layout_centerHorizontal="false" />
 
@@ -62,25 +66,37 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
+<<<<<<< Updated upstream
                         android:id="@+id/textViewProgress"
                         android:textSize="@dimen/abc_text_size_medium_material"
                         android:layout_alignTop="@+id/textView"
                         android:layout_toEndOf="@+id/textView"
                         android:text="0/0" />
+=======
+                        android:id="@+id/textViewProgressToday"
+                        android:text="0/0"
+                        android:layout_above="@+id/textView3"
+                        android:layout_centerHorizontal="true" />
+>>>>>>> Stashed changes
                     <ProgressBar
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar"
+                        android:id="@+id/freeTimeProgressDay"
                         style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_toRightOf="@+id/textViewProgress"
-                        android:layout_alignBottom="@+id/textView"
-                        android:layout_centerHorizontal="false"/>
+                        android:layout_alignParentEnd="true"
+                        android:layout_above="@+id/textViewProgressWeek"
+                        android:layout_toEndOf="@+id/textViewProgressToday"
+                        android:indeterminate="false" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
+<<<<<<< Updated upstream
                         android:text="Free Time Till Next Monday: "
                         android:textSize="@dimen/abc_text_size_medium_material"
+=======
+                        android:text="This Week:"
+>>>>>>> Stashed changes
                         android:layout_alignLeft="@id/textView"
                         android:layout_below="@id/textView"
                         android:id="@+id/textView3"
@@ -90,27 +106,38 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
+<<<<<<< Updated upstream
                         android:id="@+id/textViewProgress4"
                         android:textSize="@dimen/abc_text_size_medium_material"
                         android:layout_alignLeft="@+id/textViewProgress"
                         android:layout_below="@+id/textViewProgress"
+=======
+                        android:id="@+id/textViewProgressWeek"
+                        android:layout_alignLeft="@+id/textViewProgressToday"
+                        android:layout_below="@+id/textViewProgressToday"
+>>>>>>> Stashed changes
                         android:text="0/0" />
                     <ProgressBar
                         android:visibility="visible"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar2"
+                        android:id="@+id/freeTimeProgressWeek"
                         style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_alignLeft="@+id/freeTimeProgressBar"
-                        android:layout_alignBottom="@+id/textView3"
-                        android:layout_below="@+id/freeTimeProgressBar"
-                        android:layout_centerHorizontal="false"/>
+                        android:layout_alignLeft="@+id/freeTimeProgressDay"
+                        android:layout_below="@+id/freeTimeProgressDay"
+                        android:layout_above="@+id/textViewProgressSevenDays"
+                        android:layout_alignParentEnd="true"
+                        android:indeterminate="false" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
+<<<<<<< Updated upstream
                         android:text="Free Time Till Next Monday: "
                         android:textSize="@dimen/abc_text_size_medium_material"
+=======
+                        android:text="Next 7 Days:"
+>>>>>>> Stashed changes
                         android:layout_alignLeft="@id/textView"
                         android:layout_below="@id/textView3"
                         android:id="@+id/textView5"
@@ -120,21 +147,28 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
+<<<<<<< Updated upstream
                         android:id="@+id/textViewProgress6"
                         android:textSize="@dimen/abc_text_size_medium_material"
                         android:layout_alignLeft="@+id/textViewProgress"
                         android:layout_below="@+id/textViewProgress4"
+=======
+                        android:id="@+id/textViewProgressSevenDays"
+                        android:layout_alignLeft="@+id/textViewProgressToday"
+                        android:layout_below="@+id/textViewProgressWeek"
+>>>>>>> Stashed changes
                         android:text="0/0" />
                     <ProgressBar
                         android:visibility="visible"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar3"
+                        android:id="@+id/freeTimeProgressSevenDays"
                         style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_below="@+id/freeTimeProgressBar2"
-                        android:layout_alignLeft="@+id/freeTimeProgressBar"
-                        android:layout_alignBottom="@+id/textView5"
-                        android:layout_centerHorizontal="false"/>
+                        android:layout_below="@+id/freeTimeProgressWeek"
+                        android:layout_alignLeft="@+id/freeTimeProgressDay"
+                        android:layout_alignBottom="@+id/textViewProgressSevenDays"
+                        android:layout_alignParentEnd="true"
+                        android:indeterminate="false" />
 
 
         </RelativeLayout>
