@@ -66,25 +66,29 @@
                         android:layout_alignTop="@+id/textView"
                         android:layout_toEndOf="@+id/textView"
                         android:text="0/0"
-                        android:id="@+id/textViewProgressToday"
+                        android:id="@+id/textViewToday"
                         android:layout_above="@+id/textView3"
                         android:layout_centerHorizontal="true" />
+                        android:text="0/0"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:id="@+id/textViewToday" />
+                        android:id="@+id/textViewProgressToday"
                     <ProgressBar
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/freeTimeProgressDay"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_alignParentEnd="true"
-                        android:layout_above="@+id/textViewProgressWeek"
-                        android:layout_toEndOf="@+id/textViewProgressToday"
-                        android:indeterminate="false" />
+                        android:layout_toEndOf="@+id/textViewToday"
+                        android:indeterminate="false"
+                        android:layout_above="@+id/textViewProgressWeek" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textSize="@dimen/abc_text_size_medium_material"
                         android:text="This Week:"
-
                         android:layout_alignLeft="@id/textView"
                         android:layout_below="@id/textView"
                         android:id="@+id/textView3"
@@ -96,9 +100,10 @@
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textSize="@dimen/abc_text_size_medium_material"
                         android:id="@+id/textViewProgressWeek"
-                        android:layout_alignLeft="@+id/textViewProgressToday"
-                        android:layout_below="@+id/textViewProgressToday"
-                        android:text="0/0" />
+                        android:layout_alignLeft="@+id/textViewToday"
+                        android:text="0/0"
+                        android:layout_below="@+id/textViewToday"
+                        android:layout_alignStart="@+id/textViewToday" />
                     <ProgressBar
                         android:visibility="visible"
                         android:layout_width="wrap_content"
@@ -127,9 +132,9 @@
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textSize="@dimen/abc_text_size_medium_material"
                         android:id="@+id/textViewProgressSevenDays"
-                        android:layout_alignLeft="@+id/textViewProgressToday"
                         android:layout_below="@+id/textViewProgressWeek"
                         android:text="0/0" />
+                        android:layout_alignStart="@+id/textViewProgressWeek" />
                     <ProgressBar
                         android:visibility="visible"
                         android:layout_width="wrap_content"
