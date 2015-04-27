@@ -8,6 +8,11 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Events;
 import com.google.api.services.calendar.model.Event;
 
+// CalendarList Testing
+import com.google.api.services.calendar.model.CalendarList;
+import com.google.api.services.calendar.model.CalendarListEntry;
+// </Testing>
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +67,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
         // List the next 10 events from the primary calendar.
         DateTime now = new DateTime(System.currentTimeMillis());
         List<String> eventStrings = new ArrayList<String>();
-        Events events = mActivity.mService.events().list("ce0eg6masvthf1apfap0ct0164@group.calendar.google.com") // Was "primary"
+        Events events = mActivity.mService.events().list("primary") // Was "primary"
                 .setMaxResults(10)
                 .setTimeMin(now)
                 .setOrderBy("startTime")
@@ -80,6 +85,27 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
             eventStrings.add(
                     String.format("%s (%s)", event.getSummary(), start));
         }
+
+        // CalendarListEntry Testing
+        String pageToken = null;
+        do {
+            CalendarList calendarList = mActivity.mService.calendarList().list().
+                    setPageToken(pageToken).
+                    setShowHidden(Boolean.FALSE).
+                    setShowDeleted(Boolean.FALSE).
+                    execute();
+            List<CalendarListEntry> otherItems = calendarList.getItems();
+
+            for (CalendarListEntry calendarListEntry : otherItems) {
+                if (calendarListEntry.isSelected()) {
+                    System.out.println(calendarListEntry.getSummary());
+                    System.out.println(calendarListEntry.getId());
+                }
+            }
+            pageToken = calendarList.getNextPageToken();
+        } while (pageToken != null);
+        // </Testing>
+
         return eventStrings;
     }
 
