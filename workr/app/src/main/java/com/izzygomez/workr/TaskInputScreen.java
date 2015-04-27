@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class TaskInputScreen extends ActionBarActivity {
@@ -43,11 +44,37 @@ public class TaskInputScreen extends ActionBarActivity {
 
     public void onClickSave(View v){
         ArrayList<String> returnData = new ArrayList<String>();
+        if (assignmentText.getText().length() == 0){
+            returnData.add("Assignment");
+        }
+        else{
+            returnData.add(assignmentText.getText().toString());
+        }
 
-        returnData.add(assignmentText.getText().toString());
-        returnData.add(completionTimeText.getText().toString());
-        returnData.add(dueDateText.getText().toString());
-        returnData.add(priorityText.getText().toString());
+        if (completionTimeText.getText().length() == 0){
+            returnData.add("1");
+        }
+        else{
+            returnData.add(completionTimeText.getText().toString());
+
+        }
+        if (dueDateText.getText().toString().length() == 0){
+            Calendar today = Calendar.getInstance();
+            returnData.add(today.get(Calendar.MONTH ) + "/" + today.get(Calendar.DAY_OF_MONTH) + "/" + today.get(Calendar.YEAR));
+        }
+        else{
+            returnData.add(dueDateText.getText().toString());
+        }
+        if (priorityText.getText().toString().length() == 0){
+            returnData.add("low");
+        }
+        else{
+            returnData.add(priorityText.getText().toString());
+        }
+//        returnData.add(assignmentText.getText().toString());
+//        returnData.add(completionTimeText.getText().toString());
+//        returnData.add(dueDateText.getText().toString());
+//        returnData.add(priorityText.getText().toString());
 
         addToList(returnData);
 
