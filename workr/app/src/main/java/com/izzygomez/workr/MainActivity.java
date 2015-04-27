@@ -594,12 +594,18 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    /**
+     * TODO write description and comment code
+     */
     public void calcFreeTime() {
         calcFreeTimeForToday();
         calcFreeTimeForThisWeek();
         calcFreeTimeForNextSevenDays();
     }
 
+    /**
+     * TODO write description and comment code
+     */
     public void calcFreeTimeForToday() {
         Calendar today = Calendar.getInstance();
         int totalTimeToday = NotifyUser.calculateTotalTime(today);
@@ -618,6 +624,9 @@ public class MainActivity extends ActionBarActivity {
         ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setProgress(freeTimeLeft);
     }
 
+    /**
+     * TODO write description and comment code
+     */
     public void calcFreeTimeForThisWeek() {
         Calendar endOfTheWeek = Calendar.getInstance();
         endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
@@ -640,13 +649,16 @@ public class MainActivity extends ActionBarActivity {
         ((ProgressBar)findViewById(R.id.freeTimeProgressWeek)).setProgress(freeTimeLeft);
     }
 
+    /**
+     * TODO write description and comment code
+     */
     public void calcFreeTimeForNextSevenDays() {
         Calendar nextWeek = Calendar.getInstance();
         nextWeek.add(Calendar.DATE, 6);
         Log.d("weekDay", String.valueOf(nextWeek.get(Calendar.DAY_OF_MONTH)));
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(nextWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
-        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
+        for (Assignment assignment : usersAssignments) {
             if (!assignment.getDueDate().after(nextWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
@@ -660,6 +672,12 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * TODO write description and comment code
+     * @param freeTime
+     * @param finalDate
+     * @return
+     */
     public int parseEventList(int freeTime, Calendar finalDate)  {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 
