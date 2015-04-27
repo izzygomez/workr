@@ -627,7 +627,7 @@ public class MainActivity extends ActionBarActivity {
         Log.d("endofweek",String.valueOf(endOfTheWeek.get(Calendar.DAY_OF_MONTH)));
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
-        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
+        for (Assignment assignment : usersAssignments) {
             if (!assignment.getDueDate().after(endOfTheWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }

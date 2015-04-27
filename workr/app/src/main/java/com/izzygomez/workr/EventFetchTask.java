@@ -104,6 +104,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
                     String.format("%s (%s, %s)", event.getSummary(), start, end));
         }
 
+        System.out.println(eventStrings);
         return eventStrings;
     }
 
