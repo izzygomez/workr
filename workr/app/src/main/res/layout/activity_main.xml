@@ -6,20 +6,29 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
-
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="   Task: Time: Due Date: Priority"
+        android:id="@+id/textView7"
+        android:textSize="@dimen/abc_text_size_medium_material"
+        android:layout_centerHorizontal="false"
+        />
     <LinearLayout
+        android:layout_below="@+id/textView7"
+        android:layout_centerHorizontal="true"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:visibility="visible" > <!--Temporarily made your components invisible - Izzy -->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_weight="0.1">
             <ListView
                 android:id="@+id/listViewOfTasks"
+                android:layout_centerHorizontal="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="false"
@@ -27,19 +36,25 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginRight="30dp"
                 android:layout_marginEnd="30dp"
+                android:layout_centerInParent="true"
                 android:dividerHeight="5px">
             </ListView>
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="80dp">
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:id="@+id/bars"
+            >
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Free Time Till Next Monday: "
+                        android:textSize="@dimen/abc_text_size_medium_material"
+                        android:text="Today: "
                         android:id="@+id/textView"
                         android:layout_centerHorizontal="false" />
 
@@ -47,23 +62,27 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/textViewProgress"
-                        android:layout_alignTop="@+id/textView"
-                        android:layout_toEndOf="@+id/textView"
-                        android:text="0/0" />
+                        android:textSize="@dimen/abc_text_size_medium_material"
+                        android:text="0/0"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:id="@+id/textViewToday" />
+                        android:id="@+id/textViewProgressToday"
                     <ProgressBar
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar"
+                        android:id="@+id/freeTimeProgressDay"
                         style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_toRightOf="@+id/textViewProgress"
-                        android:layout_alignBottom="@+id/textView"
-                        android:layout_centerHorizontal="false"/>
+                        android:layout_alignParentEnd="true"
+                        android:layout_toEndOf="@+id/textViewToday"
+                        android:indeterminate="false"
+                        android:layout_above="@+id/textViewProgressWeek" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Free Time Till Next Monday: "
+                        android:textSize="@dimen/abc_text_size_medium_material"
+                        android:text="This Week:"
                         android:layout_alignLeft="@id/textView"
                         android:layout_below="@id/textView"
                         android:id="@+id/textView3"
@@ -73,25 +92,28 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/textViewProgress4"
-                        android:layout_alignLeft="@+id/textViewProgress"
-                        android:layout_below="@+id/textViewProgress"
-                        android:text="0/0" />
+                        android:textSize="@dimen/abc_text_size_medium_material"
+                        android:id="@+id/textViewProgressWeek"
+                        android:text="0/0"
+                        android:layout_below="@+id/textViewToday"
+                        android:layout_alignStart="@+id/textViewToday" />
                     <ProgressBar
                         android:visibility="visible"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar2"
+                        android:id="@+id/freeTimeProgressWeek"
                         style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_alignLeft="@+id/freeTimeProgressBar"
-                        android:layout_alignBottom="@+id/textView3"
-                        android:layout_below="@+id/freeTimeProgressBar"
-                        android:layout_centerHorizontal="false"/>
+                        android:layout_alignLeft="@+id/freeTimeProgressDay"
+                        android:layout_below="@+id/freeTimeProgressDay"
+                        android:layout_above="@+id/textViewProgressSevenDays"
+                        android:layout_alignParentEnd="true"
+                        android:indeterminate="false" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Free Time Till Next Monday: "
+                        android:textSize="@dimen/abc_text_size_medium_material"
+                        android:text="Next 7 Days:"
                         android:layout_alignLeft="@id/textView"
                         android:layout_below="@id/textView3"
                         android:id="@+id/textView5"
@@ -101,20 +123,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:id="@+id/textViewProgress6"
-                        android:layout_alignLeft="@+id/textViewProgress"
-                        android:layout_below="@+id/textViewProgress4"
-                        android:text="0/0" />
+                        android:textSize="@dimen/abc_text_size_medium_material"
+                        android:id="@+id/textViewProgressSevenDays"
+                        android:text="0/0"
+                        android:layout_below="@+id/textViewProgressWeek"
+                        android:layout_alignStart="@+id/textViewProgressWeek" />
                     <ProgressBar
                         android:visibility="visible"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/freeTimeProgressBar3"
+                        android:id="@+id/freeTimeProgressSevenDays"
                         style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_below="@+id/freeTimeProgressBar2"
-                        android:layout_alignLeft="@+id/freeTimeProgressBar"
-                        android:layout_alignBottom="@+id/textView5"
-                        android:layout_centerHorizontal="false"/>
+                        android:layout_below="@+id/freeTimeProgressWeek"
+                        android:layout_alignLeft="@+id/freeTimeProgressDay"
+                        android:layout_alignBottom="@+id/textViewProgressSevenDays"
+                        android:layout_alignParentEnd="true"
+                        android:indeterminate="false" />
 
 
         </RelativeLayout>
