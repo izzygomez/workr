@@ -550,7 +550,7 @@ public class MainActivity extends ActionBarActivity {
         Log.d("freeTime",String.valueOf(freeTime));
         Log.d("freeTimeLeft", String.valueOf(freeTimeLeft));
 
-        ((TextView)findViewById(R.id.textViewProgressToday)).setText(freeTimeLeft + "/" + freeTime);
+        ((TextView)findViewById(R.id.textViewToday)).setText(freeTimeLeft + "/" + freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setMax(freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setProgress(freeTimeLeft);
     }
