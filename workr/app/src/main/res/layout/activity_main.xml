@@ -103,7 +103,7 @@
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:id="@+id/textViewProgress6"
                         android:layout_alignLeft="@+id/textViewProgress"
-                        android:layout_below="@+id/textViewProgress"
+                        android:layout_below="@+id/textViewProgress4"
                         android:text="0/0" />
                     <ProgressBar
                         android:visibility="visible"
