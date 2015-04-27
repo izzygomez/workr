@@ -202,7 +202,7 @@ public class MainActivity extends ActionBarActivity {
 
     public void clickedPlus(View v){
         lastClickedRowArray = new ArrayList<String>();
-
+        currentlySelectedListItem = null;
         goToTaskInputScreen();
     }
 
@@ -243,7 +243,7 @@ public class MainActivity extends ActionBarActivity {
         if (currentlySelectedRow != null) {
             currentlySelectedRow.setBackgroundResource(0);
         }
-        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         adapter.notifyDataSetChanged();
         updateStorage();
     }
