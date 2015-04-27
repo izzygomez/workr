@@ -15,29 +15,22 @@ import com.google.api.services.calendar.CalendarScopes;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.provider.SyncStateContract;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.json.JSONException;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -48,10 +41,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import static com.izzygomez.workr.NotifyUser.calculateFreeTime;
 
@@ -226,7 +217,18 @@ public class MainActivity extends ActionBarActivity {
 
 
     public void deleteSelectedItem(View v){
+        Assignment deletedAssignment = null;
+        for (Assignment assignment: usersAssignments) {
+            if(currentlySelectedListItem.toString() == assignment.toString()) {
+                deletedAssignment = assignment;
+                usersAssignments.remove(usersAssignments.indexOf(assignment));
+                break;
+            }
+        }
+        usersAssignments.remove(usersAssignments.indexOf(deletedAssignment));
+
         listItems.remove(currentlySelectedListItem);
+        calcFreeTime();
 //        for (ListedItem item: listItems){
 //            if (item.isSelected()) {
 //                listItems.remove(item);
@@ -548,14 +550,15 @@ public class MainActivity extends ActionBarActivity {
         Log.d("freeTime",String.valueOf(freeTime));
         Log.d("freeTimeLeft", String.valueOf(freeTimeLeft));
 
-        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
-        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
-        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
+        ((TextView)findViewById(R.id.textViewProgressToday)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setProgress(freeTimeLeft);
     }
 
     public void calcFreeTimeForThisWeek() {
         Calendar endOfTheWeek = Calendar.getInstance();
         endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        Log.d("endofweek",String.valueOf(endOfTheWeek.get(Calendar.DAY_OF_MONTH)));
         endOfTheWeek.add(Calendar.DATE,7);
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
@@ -569,14 +572,15 @@ public class MainActivity extends ActionBarActivity {
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
 
 
-        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
-        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
-        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
+        ((TextView)findViewById(R.id.textViewProgressWeek)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressWeek)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressWeek)).setProgress(freeTimeLeft);
     }
 
     public void calcFreeTimeForNextSevenDays() {
         Calendar nextWeek = Calendar.getInstance();
-        nextWeek.roll(Calendar.DAY_OF_MONTH,7);
+        nextWeek.roll(Calendar.DAY_OF_MONTH, 7);
+        Log.d("weekDay", String.valueOf(nextWeek.get(Calendar.DAY_OF_MONTH)));
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(nextWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
         for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
@@ -588,9 +592,9 @@ public class MainActivity extends ActionBarActivity {
         int freeTime = parseEventList(totalTimeThisWeek, nextWeek);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
 
-        ((TextView)findViewById(R.id.textViewProgress)).setText(freeTimeLeft + "/" + freeTime);
-        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setMax(freeTime);
-        ((ProgressBar)findViewById(R.id.freeTimeProgressBar)).setProgress(freeTimeLeft);
+        ((TextView)findViewById(R.id.textViewProgressSevenDays)).setText(freeTimeLeft + "/" + freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressSevenDays)).setMax(freeTime);
+        ((ProgressBar)findViewById(R.id.freeTimeProgressSevenDays)).setProgress(freeTimeLeft);
 
     }
 
