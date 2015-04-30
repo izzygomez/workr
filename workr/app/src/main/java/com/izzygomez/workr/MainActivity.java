@@ -11,6 +11,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Event;
 
 import android.accounts.AccountManager;
 import android.app.Dialog;
@@ -58,7 +59,7 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<String> lastClickedRowArray = new ArrayList<String>(); //Array of Strings to pass to TaskInputScreen to preload input boxes during edits
     ArrayList<String> taskInputData = new ArrayList<String>(); //data that comes from the TaskInputScreen to be displayed
     ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();//title of each assignment
-    List<String> usersEvents = new ArrayList<>();
+    List<Event> usersEvents = new ArrayList<>();
     ListedItem currentlySelectedListItem;
     View currentlySelectedRow;
     public View row;
@@ -72,9 +73,6 @@ public class MainActivity extends ActionBarActivity {
     com.google.api.services.calendar.Calendar mService;
 
     GoogleAccountCredential credential;
-
-    private TextView mStatusText;
-    private TextView mEventText;
 
     final HttpTransport transport = AndroidHttp.newCompatibleTransport();
     final JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
@@ -91,8 +89,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         populateListItemsFromFile();
-        mStatusText = (TextView) findViewById(R.id.mStatusText);
-        mEventText = (TextView) findViewById(R.id.mEventText);
+
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
         adapter = new ArrayAdapter<ListedItem>(this, android.R.layout.simple_list_item_1, listItems);
 
@@ -163,6 +160,7 @@ public class MainActivity extends ActionBarActivity {
                 .build();
 
     }
+
     public void goToTaskInputScreen(){
         Intent taskInputIntent = new Intent(this, TaskInputScreen.class);
         taskInputIntent.putExtra("taskData", lastClickedRowArray);
@@ -201,7 +199,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void clickedPlus(View v){
-        lastClickedRowArray = new ArrayList<String>();
+        lastClickedRowArray = new ArrayList<>();
         if(currentlySelectedRow != null){
             currentlySelectedRow.setBackgroundResource(0);
         }
@@ -224,7 +222,6 @@ public class MainActivity extends ActionBarActivity {
         taskInputs.add("test");
         addToList(taskInputs);
     }
-
 
     public void deleteSelectedItem(View v){
         Assignment deletedAssignment = null;
@@ -256,6 +253,7 @@ public class MainActivity extends ActionBarActivity {
         adapter.notifyDataSetChanged();
         updateStorage();
     }
+
     public void editSelectedItem(View v){
         for (ListedItem item: listItems){
             if(item.isSelected()){
@@ -271,7 +269,6 @@ public class MainActivity extends ActionBarActivity {
             }
         }
     }
-
 
     public void updateStorage(){
         String FILENAME = "workr_file";
@@ -304,7 +301,8 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
-    //Remember to add some check that makes sure that you can't use colons in any of your task entries or transform them to something
+
+    // TODO Remember to add some check that makes sure that you can't use colons in any of your task entries or transform them to something
     //else internally
     public void populateListItemsFromFile(){
         StringBuilder builder = new StringBuilder();
@@ -357,7 +355,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-
     public Assignment createAssignment() {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy"); // or mm/dd/yy or assume 2015?
@@ -384,8 +381,7 @@ public class MainActivity extends ActionBarActivity {
             refreshEventList();
 
         } else {
-            mStatusText.setText("Google Play Services required: " +
-                    "after installing, close and relaunch this app.");
+            // TODO do something here if necessary
         }
     }
 
@@ -448,7 +444,7 @@ public class MainActivity extends ActionBarActivity {
                         refreshEventList();
                     }
                 } else if (resultCode == RESULT_CANCELED) {
-                    mStatusText.setText("Account unspecified.");
+                    // mStatusText.setText("Account unspecified."); // Debugging purposes TODO delete this
                 }
                 break;
             case REQUEST_AUTHORIZATION:
@@ -476,61 +472,32 @@ public class MainActivity extends ActionBarActivity {
                 new EventFetchTask(this).execute();
 
             } else {
-                mStatusText.setText("No network connection available.");
+                // mStatusText.setText("No network connection available."); // Debugging purposes TODO delete this
             }
         }
-    }
-
-    /**
-     * Clear any existing events from the list display and update the header
-     * message; called from background threads and async tasks that need to
-     * update the UI (in the UI thread).
-     */
-    public void clearEvents() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mStatusText.setText("Retrieving events…");
-                mEventText.setText("");
-            }
-        });
     }
 
     /**
      * Fill the event display with the given List of strings; called from
      * background threads and async tasks that need to update the UI (in the
      * UI thread).
-     * @param eventStrings a List of Strings to populate the event display with.
+     * @param events a List of Strings to populate the event display with.
      */
-    public void updateEventList(final List<String> eventStrings) {
-        usersEvents = eventStrings;
+    public void updateEventList(final List<Event> events) {
+        usersEvents = events;
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (eventStrings == null) {
-                    mStatusText.setText("Error retrieving events!");
-                } else if (eventStrings.size() == 0) {
-                    mStatusText.setText("No upcoming events found.");
+                if (events == null) {
+                    // mStatusText.setText("Error retrieving events!"); // Debugging purposes TODO delete this
+                } else if (events.size() == 0) {
+                    // mStatusText.setText("No upcoming events found."); // Debugging purposes TODO delete this
                 } else {
-                    mStatusText.setText("Your upcoming events retrieved using" +
+                    /*mStatusText.setText("Your upcoming events retrieved using" +
                             " the Google Calendar API:");
-                    mEventText.setText(TextUtils.join("\n\n", eventStrings));
+                    mEventText.setText(TextUtils.join("\n\n", events));*/ // Debugging purposes TODO delete this
                 }
-            }
-        });
-    }
-
-    /**
-     * Show a status message in the list header TextView; called from background
-     * threads and async tasks that need to update the UI (in the UI thread).
-     * @param message a String to display in the UI header TextView.
-     */
-    public void updateStatus(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mStatusText.setText(message);
             }
         });
     }
@@ -594,7 +561,6 @@ public class MainActivity extends ActionBarActivity {
 
     /**
      * Updates the 3 progress bars by calling each specified function.
-     *
      */
     public void calcFreeTime() {
         calcFreeTimeForToday();
@@ -732,6 +698,7 @@ public class MainActivity extends ActionBarActivity {
         if (usersEvents.size() > 0) {
             Log.d("events", usersEvents.toString());
 
+            /*
             for( String event : usersEvents) {
                 if (event.contains(":")) {
 
@@ -769,7 +736,7 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
 
-            }
+            }*/ // Debugging purposes TODO modify this to account for Event objects instead of strings
 
         }
 

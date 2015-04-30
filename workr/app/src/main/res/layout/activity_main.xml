@@ -188,27 +188,6 @@
         </RelativeLayout>
 
     </LinearLayout>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Retrieving events..."
-        android:id="@+id/mStatusText"
-        android:visibility="invisible"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:text="No events retrieved yet"
-        android:id="@+id/mEventText"
-        android:visibility="invisible" />
-
-
 </RelativeLayout>
 
 

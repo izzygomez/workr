@@ -24,9 +24,9 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
 
     /**
      * Constructor.
-     * @param activity UpcomingEventsActivity that spawned this task.
+     * @param activity MainActivity that spawned this task.
      */
-    EventFetchTask(MainActivity activity) {
+    protected EventFetchTask(MainActivity activity) {
         this.mActivity = activity;
     }
 
@@ -36,7 +36,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
      */
     @Override
     protected Void doInBackground(Void... params) {
-        try {
+        /*try {
             mActivity.clearEvents();
             mActivity.updateEventList(fetchEventsFromCalendar());
 
@@ -53,7 +53,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
             mActivity.updateStatus("The following error occurred: " +
                     e.getMessage());
         }
-
+        */
         return null;
     }
 
@@ -62,14 +62,14 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
      * @return List of Strings describing returned events.
      * @throws IOException
      */
-    public List<String> fetchEventsFromCalendar() throws IOException {
+    public List<Event> fetchEventsFromCalendar() throws IOException {
         // Define what "now" and "month from now" are
         DateTime now = new DateTime(System.currentTimeMillis());
         DateTime aMonthFromNow = new DateTime(System.currentTimeMillis()+2628000000L);
 
         // init empty arrays for Event objects and corresponding strings (that we format later)
         List<Event> allEvents = new ArrayList<>();
-        List<String> eventStrings = new ArrayList<>();
+        // List<String> eventStrings = new ArrayList<>(); // Debugging purposes TODO delete this
 
         // Find all calendars from user that are NOT deleted and NOT hidden
         CalendarList calendarList = mActivity.mService.calendarList().list().execute();
@@ -91,6 +91,9 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
             }
         }
 
+        // init list of events that will actually be returned
+        List<Event> updatedAllEvents = new ArrayList<>();
+
         for (Event event : allEvents) {
             // Get start and end times...
             DateTime start = event.getStart().getDateTime();
@@ -100,12 +103,14 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
             if (start == null) continue;
 
             // ...and add to eventStrings
-            eventStrings.add(
-                    String.format("%s (%s, %s)", event.getSummary(), start, end));
+            // eventStrings.add( // Debugging purposes TODO delete this
+                    // String.format("%s (%s, %s)", event.getSummary(), start, end)); // Debugging purposes TODO delete this
+
+            updatedAllEvents.add(event);
         }
 
-        System.out.println(eventStrings);
-        return eventStrings;
+        // System.out.println(eventStrings); // Debugging purposes TODO delete this
+        return updatedAllEvents;
     }
 
 }
