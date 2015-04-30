@@ -27,14 +27,12 @@ public class TaskInputScreen extends ActionBarActivity {
     EditText completionTimeText;
     EditText dueDateText;
     EditText priorityText;
-    Spinner spinner = (Spinner) findViewById(R.id.priority_spinner);
+//    Spinner spinner = (Spinner) findViewById(R.id.priority_spinner);
+
     // Create an ArrayAdapter using the string array and a default spinner layout
-    ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
-            R.array.priority_array, android.R.layout.simple_spinner_item);
-// Specify the layout to use when the list of choices appears
-//    spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-// Apply the adapter to the spinner
-//    spinner.setAdapter(spinnerAdapter);
+//    ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
+//            R.array.priority_array, android.R.layout.simple_spinner_item);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +54,11 @@ public class TaskInputScreen extends ActionBarActivity {
             dueDateText.setText(passedData.get(2));
             priorityText.setText(passedData.get(3));
         }
+
+        // Specify the layout to use when the list of choices appears
+//        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+//        spinner.setAdapter(spinnerAdapter);
     }
 
     public void onClickSave(View v){
@@ -146,20 +149,20 @@ public class TaskInputScreen extends ActionBarActivity {
         }
     }
 
-
-
-    public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
-
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int pos, long id) {
-            // An item was selected. You can retrieve the selected item using
-            // parent.getItemAtPosition(pos)
-        }
-
-        public void onNothingSelected(AdapterView<?> parent) {
-            // Another interface callback
-        }
-    }
+//
+//
+//    public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
+//
+//        public void onItemSelected(AdapterView<?> parent, View view,
+//                                   int pos, long id) {
+//            // An item was selected. You can retrieve the selected item using
+//            // parent.getItemAtPosition(pos)
+//        }
+//
+//        public void onNothingSelected(AdapterView<?> parent) {
+//            // Another interface callback
+//        }
+//    }
 
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
