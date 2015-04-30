@@ -202,6 +202,16 @@ public class MainActivity extends ActionBarActivity {
 
     public void clickedPlus(View v){
         lastClickedRowArray = new ArrayList<String>();
+        if(currentlySelectedRow != null){
+            currentlySelectedRow.setBackgroundResource(0);
+        }
+        for (ListedItem item: listItems){
+            if (item.isSelected()){
+                item.toggleSelection();
+            }
+        }
+
+        currentlySelectedListItem = null;
 
         goToTaskInputScreen();
     }
@@ -243,7 +253,7 @@ public class MainActivity extends ActionBarActivity {
         if (currentlySelectedRow != null) {
             currentlySelectedRow.setBackgroundResource(0);
         }
-        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         adapter.notifyDataSetChanged();
         updateStorage();
     }
@@ -583,12 +593,18 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    /**
+     * TODO write description and comment code
+     */
     public void calcFreeTime() {
         calcFreeTimeForToday();
         calcFreeTimeForThisWeek();
         calcFreeTimeForNextSevenDays();
     }
 
+    /**
+     * TODO write description and comment code
+     */
     public void calcFreeTimeForToday() {
         Calendar today = Calendar.getInstance();
         int totalTimeToday = NotifyUser.calculateTotalTime(today);
@@ -607,6 +623,9 @@ public class MainActivity extends ActionBarActivity {
         ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setProgress(freeTimeLeft);
     }
 
+    /**
+     * TODO write description and comment code
+     */
     public void calcFreeTimeForThisWeek() {
         Calendar today = Calendar.getInstance();
 
@@ -631,6 +650,9 @@ public class MainActivity extends ActionBarActivity {
         ((ProgressBar)findViewById(R.id.freeTimeProgressWeek)).setProgress(freeTimeLeft);
     }
 
+    /**
+     * TODO write description and comment code
+     */
     public void calcFreeTimeForNextSevenDays() {
         Calendar today = Calendar.getInstance();
 
@@ -653,6 +675,12 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * TODO write description and comment code
+     * @param freeTime
+     * @param finalDate
+     * @return
+     */
     public int parseEventList(int freeTime, Calendar finalDate)  {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 

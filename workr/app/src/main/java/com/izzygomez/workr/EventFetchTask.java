@@ -38,7 +38,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
         try {
             mActivity.clearEvents();
-            mActivity.updateEventList(fetchEventsFromCalendar()); //
+            mActivity.updateEventList(fetchEventsFromCalendar());
 
         } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
             mActivity.showGooglePlayServicesAvailabilityErrorDialog(
@@ -104,6 +104,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
                     String.format("%s (%s, %s)", event.getSummary(), start, end));
         }
 
+        System.out.println(eventStrings);
         return eventStrings;
     }
 
