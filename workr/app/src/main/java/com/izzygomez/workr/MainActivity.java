@@ -234,8 +234,7 @@ public class MainActivity extends ActionBarActivity {
                 Log.d("assignment", assignment.toString());
 
                 if (currentlySelectedListItem.toString().equals(assignment.toString())) {
-                    Log.d("alright","ok");
-                    deletedAssignment = assignment;
+//                    deletedAssignment = assignment;
                     usersAssignments.remove(usersAssignments.indexOf(assignment));
                     break;
                 }
@@ -607,6 +606,7 @@ public class MainActivity extends ActionBarActivity {
      * TODO write description and comment code
      */
     public void calcFreeTimeForToday() {
+        // sets today to the start of the day
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
@@ -614,6 +614,7 @@ public class MainActivity extends ActionBarActivity {
         today.set(Calendar.MILLISECOND, 0);
 
         int totalTimeToday = NotifyUser.calculateTotalTime(today);
+        // calculates the assignments due between now and the end of the day
         ArrayList<Assignment> assignmentsDueToday = new ArrayList<>();
         for (Assignment assignment : usersAssignments) {
             if (assignment.getDueDate().get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH) &&
@@ -621,9 +622,11 @@ public class MainActivity extends ActionBarActivity {
                 assignmentsDueToday.add(assignment);
             }
         }
+        // subtracts time in calendar events from the total time the user has today
         int freeTime = parseEventList(totalTimeToday, today);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueToday);
 
+        // Doesn't allow the two text fields to Display less than 0/0 for progress
         if (freeTime < 0) {
             freeTime = 0;
         }
@@ -640,6 +643,7 @@ public class MainActivity extends ActionBarActivity {
      * TODO write description and comment code
      */
     public void calcFreeTimeForThisWeek() {
+        // sets today to the start of the day
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
@@ -648,24 +652,21 @@ public class MainActivity extends ActionBarActivity {
 
         Calendar endOfTheWeek = Calendar.getInstance();
         endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-
         endOfTheWeek.add(Calendar.DATE,7);
-        Log.d("endofweek",String.valueOf(endOfTheWeek.get(Calendar.DAY_OF_MONTH)));
+
+        // calculates the assignments due between now and the end of the week
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
-        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
-            System.out.println(assignment.toString());
-            System.out.println(today.toString());
-            System.out.println(!assignment.getDueDate().before(today));
-            System.out.println(!assignment.getDueDate().after(endOfTheWeek));
-
+        for (Assignment assignment : usersAssignments) {
             if (!assignment.getDueDate().before(today) && !assignment.getDueDate().after(endOfTheWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
         }
+        // subtracts time in calendar events from the total time the user has this week
         int freeTime = parseEventList(totalTimeThisWeek, endOfTheWeek);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
 
+        // Doesn't allow the two text fields to Display less than 0/0 for progress
         if (freeTime < 0) {
             freeTime = 0;
         }
@@ -682,6 +683,7 @@ public class MainActivity extends ActionBarActivity {
      * TODO write description and comment code
      */
     public void calcFreeTimeForNextSevenDays() {
+        // sets today to the start of the day
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
         today.set(Calendar.MINUTE, 0);
@@ -690,17 +692,19 @@ public class MainActivity extends ActionBarActivity {
 
         Calendar nextWeek = Calendar.getInstance();
         nextWeek.add(Calendar.DATE, 6);
-        Log.d("weekDay", String.valueOf(nextWeek.get(Calendar.DAY_OF_MONTH)));
+        // calculates the assignments due between now and 7 days from today
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(nextWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
-        for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
+        for (Assignment assignment : usersAssignments) {
             if (!assignment.getDueDate().before(today) && !assignment.getDueDate().after(nextWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
         }
+        // subtracts time in calendar events from the total time the user has this week
         int freeTime = parseEventList(totalTimeThisWeek, nextWeek);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
 
+        // Doesn't allow the two text fields to Display less than 0/0 for progress
         if (freeTime < 0) {
             freeTime = 0;
         }
