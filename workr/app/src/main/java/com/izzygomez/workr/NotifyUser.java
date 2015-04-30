@@ -72,53 +72,5 @@ public class NotifyUser {
         return freeTime;
     }
 
-    public int percentOfTimeLeft (Assignment currentAssignment) {
-        int timeLeft = calculateTotalTime(currentAssignment.getDueDate());
-
-        ArrayList<Assignment> assignmentsAlsoDue = new ArrayList<Assignment>();
-
-        for(Assignment assignment : (ArrayList<Assignment>)assignments) {
-            if (assignment != currentAssignment && !currentAssignment.getDueDate().before(assignment)) {
-                assignmentsAlsoDue.add(assignment);
-            }
-        }
-
-        int freeTimeLeft = calculateFreeTime(timeLeft, assignmentsAlsoDue);
-        return (currentAssignment.getEstimatedTime()*100)/(freeTimeLeft);
-    }
-
-    /*
-       Returns a boolean for if a notification should be sent
-     */
-    public boolean notifyUser(Assignment currentAssignment) {
-        ArrayList highPriorityIntervals = new ArrayList<Integer>();
-        highPriorityIntervals.add(100);
-        highPriorityIntervals.add(90);
-        highPriorityIntervals.add(80);
-        highPriorityIntervals.add(70);
-
-
-        ArrayList lowPriorityIntervals = new ArrayList<Integer>();
-        lowPriorityIntervals.add(100);
-        lowPriorityIntervals.add(90);
-
-        Boolean notifyUser = false;
-
-        int percentLeft = percentOfTimeLeft(currentAssignment);
-
-        notifyUser = true;
-//        if (currentAssignment.getHighPriority() && highPriorityIntervals.contains(percentLeft)) {
-//            notifyUser = true;
-//        } else if(lowPriorityIntervals.contains(percentLeft)) {
-//            notifyUser = true;
-//        }
-
-        return notifyUser;
-    }
-
-//    public void timeLeft (View view) {
-////        ((TextView)findViewById(R.id.textView)).setText("Assignment One Due on: " + sdf.format(assignmentOne.getDueDate().getTime()) + " is " + calculateTotalTime(assignmentOne.getDueDate()) + " hours left");
-//        ((TextView)findViewById(R.id.textView)).setText("You have " + percentOfTimeLeft(assignmentOne));
-//    }
 
 }

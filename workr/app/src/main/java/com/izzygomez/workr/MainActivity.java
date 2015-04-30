@@ -594,7 +594,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
-     * TODO write description and comment code
+     * Updates the 3 progress bars by calling each specified function.
+     *
      */
     public void calcFreeTime() {
         calcFreeTimeForToday();
@@ -607,6 +608,11 @@ public class MainActivity extends ActionBarActivity {
      */
     public void calcFreeTimeForToday() {
         Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+
         int totalTimeToday = NotifyUser.calculateTotalTime(today);
         ArrayList<Assignment> assignmentsDueToday = new ArrayList<>();
         for (Assignment assignment : usersAssignments) {
@@ -618,6 +624,13 @@ public class MainActivity extends ActionBarActivity {
         int freeTime = parseEventList(totalTimeToday, today);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueToday);
 
+        if (freeTime < 0) {
+            freeTime = 0;
+        }
+        if (freeTimeLeft < 0) {
+            freeTimeLeft = 0;
+        }
+
         ((TextView)findViewById(R.id.textViewToday)).setText(freeTimeLeft + "/" + freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setMax(freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setProgress(freeTimeLeft);
@@ -628,6 +641,10 @@ public class MainActivity extends ActionBarActivity {
      */
     public void calcFreeTimeForThisWeek() {
         Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
 
         Calendar endOfTheWeek = Calendar.getInstance();
         endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
@@ -637,6 +654,11 @@ public class MainActivity extends ActionBarActivity {
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
         for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
+            System.out.println(assignment.toString());
+            System.out.println(today.toString());
+            System.out.println(!assignment.getDueDate().before(today));
+            System.out.println(!assignment.getDueDate().after(endOfTheWeek));
+
             if (!assignment.getDueDate().before(today) && !assignment.getDueDate().after(endOfTheWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
@@ -644,6 +666,12 @@ public class MainActivity extends ActionBarActivity {
         int freeTime = parseEventList(totalTimeThisWeek, endOfTheWeek);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
 
+        if (freeTime < 0) {
+            freeTime = 0;
+        }
+        if (freeTimeLeft < 0) {
+            freeTimeLeft = 0;
+        }
 
         ((TextView)findViewById(R.id.textViewProgressWeek)).setText(freeTimeLeft + "/" + freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressWeek)).setMax(freeTime);
@@ -655,6 +683,10 @@ public class MainActivity extends ActionBarActivity {
      */
     public void calcFreeTimeForNextSevenDays() {
         Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
 
         Calendar nextWeek = Calendar.getInstance();
         nextWeek.add(Calendar.DATE, 6);
@@ -668,6 +700,13 @@ public class MainActivity extends ActionBarActivity {
         }
         int freeTime = parseEventList(totalTimeThisWeek, nextWeek);
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
+
+        if (freeTime < 0) {
+            freeTime = 0;
+        }
+        if (freeTimeLeft < 0) {
+            freeTimeLeft = 0;
+        }
 
         ((TextView)findViewById(R.id.textViewProgressSevenDays)).setText(freeTimeLeft + "/" + freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressSevenDays)).setMax(freeTime);
@@ -688,6 +727,7 @@ public class MainActivity extends ActionBarActivity {
 
         if (usersEvents.size() > 0) {
             Log.d("events", usersEvents.toString());
+
             for( String event : usersEvents) {
                 if (event.contains(":")) {
 
