@@ -608,6 +608,8 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void calcFreeTimeForThisWeek() {
+        Calendar today = Calendar.getInstance();
+
         Calendar endOfTheWeek = Calendar.getInstance();
         endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 
@@ -616,7 +618,7 @@ public class MainActivity extends ActionBarActivity {
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
         for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
-            if (!assignment.getDueDate().after(endOfTheWeek)) {
+            if (!assignment.getDueDate().before(today) && !assignment.getDueDate().after(endOfTheWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
         }
@@ -630,13 +632,15 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void calcFreeTimeForNextSevenDays() {
+        Calendar today = Calendar.getInstance();
+
         Calendar nextWeek = Calendar.getInstance();
         nextWeek.add(Calendar.DATE, 6);
         Log.d("weekDay", String.valueOf(nextWeek.get(Calendar.DAY_OF_MONTH)));
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(nextWeek);
         ArrayList<Assignment> assignmentsDueBeforeMonday = new ArrayList<>();
         for (Assignment assignment : (ArrayList<Assignment>)usersAssignments) {
-            if (!assignment.getDueDate().after(nextWeek)) {
+            if (!assignment.getDueDate().before(today) && !assignment.getDueDate().after(nextWeek)) {
                 assignmentsDueBeforeMonday.add(assignment);
             }
         }
