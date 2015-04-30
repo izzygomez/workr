@@ -71,8 +71,15 @@
                     android:text="Due date"
                     android:id="@+id/textView7"
                     android:layout_marginTop="80dp" />
-
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Calendar"
+                android:onClick="showDatePickerDialog"
+                android:layout_toRightOf="@+id/textView7"
+                android:layout_alignTop="@+id/textView7"/>
             <EditText
+                android:visibility="invisible"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/textView7"
@@ -98,7 +105,16 @@
                 android:layout_marginTop="80dp"
                 android:width="100dp" />
 
+            <Spinner
+                android:id="@+id/priority_spinner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/textView8"
+                android:layout_toRightOf="@+id/textView8"/>
+
+
             <EditText
+                android:visibility="invisible"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/textView8"

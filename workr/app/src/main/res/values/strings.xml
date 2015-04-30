@@ -4,4 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_task_input_screen">TaskInputScreen</string>
+    <string-array name="priority_array">
+        <item>High</item>
+        <item>Low</item>
+    </string-array>
 </resources>
