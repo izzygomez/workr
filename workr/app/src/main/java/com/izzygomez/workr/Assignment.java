@@ -15,7 +15,7 @@ public class Assignment {
     private int estimatedTime;
     private Calendar dueDate;
     private String highPriority;
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy");
+    SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
 
     public Assignment(String assignmentName, int timeToFinish, Calendar turnInDate, String priority) {
         this.subject = assignmentName;

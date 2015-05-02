@@ -21,7 +21,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +30,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -42,7 +40,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static com.izzygomez.workr.NotifyUser.calculateFreeTime;
@@ -229,9 +226,10 @@ public class MainActivity extends ActionBarActivity {
             if (currentlySelectedListItem != null) {
                 Log.d("current", currentlySelectedListItem.toString());
                 Log.d("assignment", assignment.toString());
-
+                Log.d("boolean", String.valueOf(currentlySelectedListItem.toString().equals(assignment.toString())));
                 if (currentlySelectedListItem.toString().equals(assignment.toString())) {
 //                    deletedAssignment = assignment;
+
                     usersAssignments.remove(usersAssignments.indexOf(assignment));
                     break;
                 }
@@ -334,7 +332,7 @@ public class MainActivity extends ActionBarActivity {
             }
             if (builderAssignment.toString().length() > 0) {
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy"); // or mm/dd/yy or assume 2015?
+                SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy"); // or mm/dd/yy or assume 2015?
 
 
                 listItemsToStringArrayAssignment = builderAssignment.toString().split("\n");
@@ -357,7 +355,7 @@ public class MainActivity extends ActionBarActivity {
 
     public Assignment createAssignment() {
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yy"); // or mm/dd/yy or assume 2015?
+        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy"); // or mm/dd/yy or assume 2015?
 
         try {
             cal.setTime(sdf.parse(taskInputData.get(2)));
