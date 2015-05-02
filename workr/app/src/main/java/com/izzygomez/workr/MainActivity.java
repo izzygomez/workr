@@ -11,7 +11,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.services.calendar.model.Event;
 
 import android.accounts.AccountManager;
 import android.app.Dialog;
@@ -41,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.izzygomez.workr.NotifyUser.calculateFreeTime;
 
@@ -207,7 +207,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
         currentlySelectedListItem = null;
-
+        calcFreeTime();
         goToTaskInputScreen();
     }
 
@@ -224,9 +224,6 @@ public class MainActivity extends ActionBarActivity {
         Assignment deletedAssignment = null;
         for (Assignment assignment: usersAssignments) {
             if (currentlySelectedListItem != null) {
-                Log.d("current", currentlySelectedListItem.toString());
-                Log.d("assignment", assignment.toString());
-                Log.d("boolean", String.valueOf(currentlySelectedListItem.toString().equals(assignment.toString())));
                 if (currentlySelectedListItem.toString().equals(assignment.toString())) {
 //                    deletedAssignment = assignment;
 
@@ -578,6 +575,7 @@ public class MainActivity extends ActionBarActivity {
         today.set(Calendar.MILLISECOND, 0);
 
         int totalTimeToday = NotifyUser.calculateTotalTime(today);
+        Log.d("totalTime", String.valueOf(totalTimeToday));
         // calculates the assignments due between now and the end of the day
         ArrayList<Assignment> assignmentsDueToday = new ArrayList<>();
         for (Assignment assignment : usersAssignments) {
@@ -683,15 +681,49 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
+     * Event class used for parsing the Google Calendar.
+     * Used in finding the hours blocked out during the day
+     */
+    public class Event {
+        private Calendar start;
+        private Calendar end;
+        private List<Integer> blockedOutHours = new ArrayList<>();
+
+        public Event(Calendar start, Calendar end) {
+            this.start = start;
+            this.end = end;
+
+            // Calculates the hours of day that the event blocks out
+            Calendar tempTime = start;
+            while(tempTime.before(end)) {
+                blockedOutHours.add(tempTime.get(Calendar.HOUR_OF_DAY));
+                tempTime.roll(Calendar.HOUR_OF_DAY, true);
+            }
+
+        }
+        public Calendar getStart() {
+            return this.start;
+        }
+        public Calendar getEnd() {
+            return this.end;
+        }
+        public List<Integer> getBlockedOutHours() {
+            return blockedOutHours;
+        }
+    }
+
+    /**
      * TODO write description and comment code
-     * @param freeTime
-     * @param finalDate
-     * @return
+     * @param freeTime the total number of hours between the current time and the future specified time
+     * @param finalDate the future specified time an assignment may be due or the end of the week
+     * @return the number of hours the user isn't busy, based on their Google Calendar events
      */
     public int parseEventList(int freeTime, Calendar finalDate)  {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
 
         int timeTakenForEvents = 0;
+
+        List<Event> eventsBeforeDeadline = new ArrayList<>();
 
         if (usersEvents.size() > 0) {
             Log.d("events", usersEvents.toString());
@@ -738,6 +770,48 @@ public class MainActivity extends ActionBarActivity {
 
         }
 
+
+        Calendar tempTime = Calendar.getInstance();
+        tempTime.set(Calendar.HOUR_OF_DAY, 0);
+        tempTime.set(Calendar.MINUTE, 0);
+        tempTime.set(Calendar.SECOND, 0);
+        tempTime.set(Calendar.MILLISECOND, 0);
+
+        List<Integer> hoursOfDayBusy;
+
+        // Checks each day for the hours that have/include an event
+        // Sums up this number of hours for each day
+        // ** Avoids double counting
+        while(!finalDate.before(tempTime)) {
+            hoursOfDayBusy = new ArrayList<>();
+            for (Event event: eventsBeforeDeadline) {
+                if (event.getStart().get(Calendar.DAY_OF_MONTH) == tempTime.get(Calendar.DAY_OF_MONTH)) {
+                    // For when we are in an event
+                    if (event.getStart().before(Calendar.getInstance()) && event.getEnd().after(Calendar.getInstance())) {
+                        for(int i=0; i<event.blockedOutHours.size(); i++) {
+                            // Only adds hours that are after 7 AM and not already populated and is after the current time
+                            if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
+                                    && event.getBlockedOutHours().get(i) >= 8
+                                    && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <= event.getBlockedOutHours().get(i)){
+                                hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+                            }
+                        }
+                    } else {
+                        for(int i=0; i<event.blockedOutHours.size(); i++) {
+                            // Only adds hours that are after 7 AM and not already populated
+                            if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
+                                    && event.getBlockedOutHours().get(i) >= 8){
+                                hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+                            }
+                        }
+
+                    }
+                    timeTakenForEvents += hoursOfDayBusy.size();
+                }
+            }
+
+            tempTime.roll(Calendar.DAY_OF_MONTH, true);
+        }
 
         return freeTime - timeTakenForEvents;
     }

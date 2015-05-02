@@ -18,7 +18,7 @@ public class NotifyUser {
     Calendar projectDueDate = Calendar.getInstance();
     Assignment assignmentOne = new Assignment("6.s198 Project 2 Beta", 15, projectDueDate,"high");
     Assignment assignmentTwo = new Assignment("6.s198 Project 4 Beta", 2, projectDueDate,"high");
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
 
     /*
 * Total time starting from now (when function is called) till the end of the given day,
@@ -32,7 +32,7 @@ public class NotifyUser {
         int hourOfDay = currentTime.get(Calendar.HOUR_OF_DAY);
 
         // sanity check
-        if (timeTill.before(currentTime)) {
+        if (timeTill.before(currentTime) && !(timeTill.get(Calendar.DAY_OF_MONTH) == currentTime.get(Calendar.DAY_OF_MONTH))) {
             int noTime = 0;
             return noTime;
         }
