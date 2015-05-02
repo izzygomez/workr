@@ -47,6 +47,7 @@ public class TaskInputScreen extends ActionBarActivity {
         assignmentText = (EditText) findViewById(R.id.editText5);
         completionTimeText = (EditText) findViewById(R.id.editText6);
         dueDateText = (EditText) findViewById(R.id.editText7);
+        dueDateText.setText(Integer.toString(month + 1) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
         priorityText = (EditText) findViewById(R.id.editText8);
         Bundle extras = getIntent().getExtras();
         if (extras == null){
@@ -88,7 +89,6 @@ public class TaskInputScreen extends ActionBarActivity {
             returnData.add(completionTimeText.getText().toString());
 
         }
-
         returnData.add(Integer.toString(month + 1) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
 
         if (priority){
@@ -157,6 +157,7 @@ public class TaskInputScreen extends ActionBarActivity {
         public void onDateSet(DatePicker view, int y, int m, int d) {
             setCalendar(d, m, y);
             Log.d("Correct Date", Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year));
+            dueDateText.setText(Integer.toString(month + 1) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
         }
     }
 

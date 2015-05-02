@@ -71,23 +71,38 @@
                     android:text="Due date"
                     android:id="@+id/textView7"
                     android:layout_marginTop="80dp" />
-            <Button
+            <RelativeLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Calendar"
-                android:onClick="showDatePickerDialog"
-                android:layout_toRightOf="@+id/textView7"
-                android:layout_alignTop="@+id/textView7"/>
+                android:id="@+id/calendarStuff"
+                android:layout_alignBottom="@id/textView7"
+                android:layout_toRightOf="@id/textView7">
+
             <EditText
-                android:visibility="invisible"
+                android:visibility="visible"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/textView7"
-                android:layout_toRightOf="@+id/textView7"
+                android:text="text"
                 android:id="@+id/editText7"
                 android:singleLine="true"
                 android:inputType="date"
-                android:hint="mm/dd/yy" />
+                android:hint="mm/dd/yy"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true" />
+
+            <ImageButton
+                android:visibility="visible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/calendar2"
+                android:onClick="showDatePickerDialog"
+                android:id="@+id/calendarButton"
+                android:layout_alignBottom="@+id/editText7"
+                android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+
+
 
         </RelativeLayout>
 
