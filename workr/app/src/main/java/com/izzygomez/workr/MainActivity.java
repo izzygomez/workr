@@ -21,6 +21,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -93,8 +95,12 @@ public class MainActivity extends ActionBarActivity {
         adapter.notifyDataSetChanged();
         updateStorage();
         Log.d("listItems",listItems.toString());
-//        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
         taskListView.setAdapter(adapter);
+//        RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
+//        recList.setHasFixedSize(true);
+//        LinearLayoutManager llm = new LinearLayoutManager(this);
+//        llm.setOrientation(LinearLayoutManager.VERTICAL);
+//        recList.setLayoutManager(llm);
 
         // PHILLY'S CODE
         calcFreeTime();
@@ -616,7 +622,7 @@ public class MainActivity extends ActionBarActivity {
 
         Calendar endOfTheWeek = Calendar.getInstance();
         endOfTheWeek.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        endOfTheWeek.add(Calendar.DATE,7);
+        endOfTheWeek.add(Calendar.DATE, 7);
 
         // calculates the assignments due between now and the end of the week
         int totalTimeThisWeek = NotifyUser.calculateTotalTime(endOfTheWeek);

@@ -28,9 +28,10 @@ public class TaskInputScreen extends ActionBarActivity {
     EditText completionTimeText;
     EditText dueDateText;
     EditText priorityText;
-    int month = 1;
-    int year = 2;
-    int day = 3;
+    Calendar cal = Calendar.getInstance();
+    int month = cal.get(Calendar.MONTH);
+    int year = cal.get(Calendar.YEAR);
+    int day = cal.get(Calendar.DAY_OF_MONTH);
     Boolean priority = false;
     Spinner spinner;
 
@@ -88,7 +89,7 @@ public class TaskInputScreen extends ActionBarActivity {
 
         }
 
-        returnData.add(Integer.toString(month) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
+        returnData.add(Integer.toString(month + 1) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
 
         if (priority){
              returnData.add("High");
