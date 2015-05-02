@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,11 +28,14 @@ public class TaskInputScreen extends ActionBarActivity {
     EditText completionTimeText;
     EditText dueDateText;
     EditText priorityText;
-//    Spinner spinner = (Spinner) findViewById(R.id.priority_spinner);
+    int month = 1;
+    int year = 2;
+    int day = 3;
+    View mainView;
+
 
     // Create an ArrayAdapter using the string array and a default spinner layout
-//    ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
-//            R.array.priority_array, android.R.layout.simple_spinner_item);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +45,6 @@ public class TaskInputScreen extends ActionBarActivity {
         completionTimeText = (EditText) findViewById(R.id.editText6);
         dueDateText = (EditText) findViewById(R.id.editText7);
         priorityText = (EditText) findViewById(R.id.editText8);
-
         Bundle extras = getIntent().getExtras();
         if (extras == null){
             return;
@@ -54,14 +57,17 @@ public class TaskInputScreen extends ActionBarActivity {
             dueDateText.setText(passedData.get(2));
             priorityText.setText(passedData.get(3));
         }
-
+        Spinner spinner = (Spinner) findViewById(R.id.priority_spinner);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.priority_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-//        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-//        spinner.setAdapter(spinnerAdapter);
+        spinner.setAdapter(spinnerAdapter);
     }
 
     public void onClickSave(View v){
+        Log.d("Date", Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year));
         ArrayList<String> returnData = new ArrayList<String>();
         if (assignmentText.getText().length() == 0){
             returnData.add("Assignment");
@@ -77,13 +83,14 @@ public class TaskInputScreen extends ActionBarActivity {
             returnData.add(completionTimeText.getText().toString());
 
         }
-        if (dueDateText.getText().toString().length() == 0){
-            Calendar today = Calendar.getInstance();
-            returnData.add(Integer.toString(today.get(Calendar.MONTH) + 1) + "/" + today.get(Calendar.DAY_OF_MONTH) + "/" + today.get(Calendar.YEAR));
-        }
-        else{
-            returnData.add(dueDateText.getText().toString());
-        }
+//        if (dueDateText.getText().toString().length() == 0){
+//            Calendar today = Calendar.getInstance();
+//            returnData.add(Integer.toString(today.get(Calendar.MONTH) + 1) + "/" + today.get(Calendar.DAY_OF_MONTH) + "/" + today.get(Calendar.YEAR));
+//        }
+//        else{
+            returnData.add(Integer.toString(month) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
+//            returnData.add(dueDateText.getText().toString());
+//        }
         if (priorityText.getText().toString().length() == 0){
             returnData.add("low");
         }
@@ -132,20 +139,27 @@ public class TaskInputScreen extends ActionBarActivity {
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
 
+        static Calendar c;
+        static int year, month, day;
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
-            final Calendar c = Calendar.getInstance();
+            c = Calendar.getInstance();
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
+
 
             // Create a new instance of DatePickerDialog and return it
             return new DatePickerDialog(getActivity(), this, year, month, day);
         }
 
-        public void onDateSet(DatePicker view, int year, int month, int day) {
-            // Do something with the date chosen by the user
+        public void onDateSet(DatePicker view, int y, int m, int d) {
+            year = y;
+            month = m;
+            day = d;
+            Log.d("Correct Date", Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year));
         }
     }
 
