@@ -31,7 +31,9 @@ public class TaskInputScreen extends ActionBarActivity {
     int month = 1;
     int year = 2;
     int day = 3;
-    View mainView;
+    Boolean priority = false;
+    Spinner spinner;
+
 
 
     // Create an ArrayAdapter using the string array and a default spinner layout
@@ -57,13 +59,15 @@ public class TaskInputScreen extends ActionBarActivity {
             dueDateText.setText(passedData.get(2));
             priorityText.setText(passedData.get(3));
         }
-        Spinner spinner = (Spinner) findViewById(R.id.priority_spinner);
+        spinner = (Spinner) findViewById(R.id.priority_spinner);
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
                 R.array.priority_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new SpinnerActivity());
+
     }
 
     public void onClickSave(View v){
@@ -83,24 +87,15 @@ public class TaskInputScreen extends ActionBarActivity {
             returnData.add(completionTimeText.getText().toString());
 
         }
-//        if (dueDateText.getText().toString().length() == 0){
-//            Calendar today = Calendar.getInstance();
-//            returnData.add(Integer.toString(today.get(Calendar.MONTH) + 1) + "/" + today.get(Calendar.DAY_OF_MONTH) + "/" + today.get(Calendar.YEAR));
-//        }
-//        else{
-            returnData.add(Integer.toString(month) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
-//            returnData.add(dueDateText.getText().toString());
-//        }
-        if (priorityText.getText().toString().length() == 0){
-            returnData.add("low");
-        }
+
+        returnData.add(Integer.toString(month) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
+
+        if (priority){
+             returnData.add("High");
+         }
         else{
-            returnData.add(priorityText.getText().toString());
-        }
-//        returnData.add(assignmentText.getText().toString());
-//        returnData.add(completionTimeText.getText().toString());
-//        returnData.add(dueDateText.getText().toString());
-//        returnData.add(priorityText.getText().toString());
+             returnData.add("Low");
+         }
 
         addToList(returnData);
 
@@ -136,11 +131,14 @@ public class TaskInputScreen extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class DatePickerFragment extends DialogFragment
+    /**
+     * Calendar selections stuff
+     */
+    public class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
 
-        static Calendar c;
-        static int year, month, day;
+        Calendar c;
+//        static int year, month, day;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -156,30 +154,45 @@ public class TaskInputScreen extends ActionBarActivity {
         }
 
         public void onDateSet(DatePicker view, int y, int m, int d) {
-            year = y;
-            month = m;
-            day = d;
+            setCalendar(d, m, y);
             Log.d("Correct Date", Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year));
         }
     }
 
-//
-//
-//    public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
-//
-//        public void onItemSelected(AdapterView<?> parent, View view,
-//                                   int pos, long id) {
-//            // An item was selected. You can retrieve the selected item using
-//            // parent.getItemAtPosition(pos)
-//        }
-//
-//        public void onNothingSelected(AdapterView<?> parent) {
-//            // Another interface callback
-//        }
-//    }
+    public void setCalendar(int d, int m, int y){
+        day = d;
+        month = m;
+        year = y;
+    }
 
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
+
+    /**
+     * Spinner Selection stuff
+     */
+    public class SpinnerActivity extends Activity implements AdapterView.OnItemSelectedListener {
+
+        public void onItemSelected(AdapterView<?> parent, View view,
+                                   int pos, long id) {
+            // An item was selected. You can retrieve the selected item using
+            // parent.getItemAtPosition(pos)
+
+            Log.d("priority", parent.getItemAtPosition(pos).toString());
+            if (parent.getItemAtPosition(pos).equals("High")){
+                priority = true;
+            }
+            else{
+                priority = false;
+            }
+        }
+
+        public void onNothingSelected(AdapterView<?> parent) {
+            // Another interface callback
+        }
+    }
+
+
 }
