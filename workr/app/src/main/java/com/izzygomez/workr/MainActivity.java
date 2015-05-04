@@ -1,5 +1,7 @@
 package com.izzygomez.workr;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -18,6 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -623,6 +626,31 @@ public class MainActivity extends ActionBarActivity {
         if (freeTimeLeft < 0) {
             freeTimeLeft = 0;
         }
+        int mId = 001;
+        String contentTitle = "Time Left in Day";
+        //System.out.print(assignmentsDueToday.get(0).getSubject());
+        if (!assignmentsDueToday.isEmpty()){
+            contentTitle = (assignmentsDueToday.get(0).getSubject()+ " Due " + Integer.toString(freeTime-freeTimeLeft)+" Hours");
+        }
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(contentTitle)
+                        .setContentText(Integer.toString(freeTimeLeft)+" Hours Free Time Left in the Day")
+                        .setOngoing(true)
+                        .setProgress(freeTime,freeTimeLeft,false)
+                        .setWhen(System.currentTimeMillis());
+
+        PendingIntent pendingResultIntent;
+        Intent resultIntent = new Intent();
+        resultIntent.setClass(this,MainActivity.class);
+        pendingResultIntent = PendingIntent.getActivity(this,0,resultIntent,0);
+        mBuilder.setContentIntent(pendingResultIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(mId, mBuilder.build());
 
         ((TextView)findViewById(R.id.textViewToday)).setText(freeTimeLeft + "/" + freeTime);
         ((ProgressBar)findViewById(R.id.freeTimeProgressDay)).setMax(freeTime);
