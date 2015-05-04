@@ -23,14 +23,18 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -50,10 +54,6 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<ListedItem> listItems = new ArrayList<ListedItem>();
     ArrayAdapter<ListedItem> adapter;
     boolean deleteMode = false;
-//    float oldX = Float.NaN;
-//    float oldY = Float.NaN;
-//    static final int DELTA = 50;
-//    enum Direction{LEFT, RIGHT;}
     int lastClickedRow = 10000;
     ArrayList<String> lastClickedRowArray = new ArrayList<String>(); //Array of Strings to pass to TaskInputScreen to preload input boxes during edits
     ArrayList<String> taskInputData = new ArrayList<String>(); //data that comes from the TaskInputScreen to be displayed
@@ -61,6 +61,9 @@ public class MainActivity extends ActionBarActivity {
     List<Event> usersEvents = new ArrayList<>();
     ListedItem currentlySelectedListItem;
     View currentlySelectedRow;
+    ListView listView;
+    CardArrayAdapter cardArrayAdapter;
+    int pos;
     public View row;
 
     // <Izzy's variables>
@@ -92,15 +95,21 @@ public class MainActivity extends ActionBarActivity {
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
         adapter = new ArrayAdapter<ListedItem>(this, android.R.layout.simple_list_item_1, listItems);
 
-        adapter.notifyDataSetChanged();
+
+        listView = (ListView) findViewById(R.id.card_listView);
+        taskListView.addHeaderView(new View(this));
+        taskListView.addFooterView(new View(this));
+        cardArrayAdapter = new CardArrayAdapter(getApplicationContext(), R.layout.list_item_view, listItems);
+
+        taskListView.setAdapter(cardArrayAdapter);
+
+//        cardArrayAdapter.notifyDataSetChanged();
+        cardArrayAdapter.updateList(listItems);
         updateStorage();
         Log.d("listItems",listItems.toString());
-        taskListView.setAdapter(adapter);
-//        RecyclerView recList = (RecyclerView) findViewById(R.id.cardList);
-//        recList.setHasFixedSize(true);
-//        LinearLayoutManager llm = new LinearLayoutManager(this);
-//        llm.setOrientation(LinearLayoutManager.VERTICAL);
-//        recList.setLayoutManager(llm);
+
+//        taskListView.setAdapter(adapter);
+//        Log.d("view", findViewById(R.id.cardList).toString());
 
         // PHILLY'S CODE
         calcFreeTime();
@@ -108,19 +117,26 @@ public class MainActivity extends ActionBarActivity {
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 row = arg1;
+                position -= 1;
+                pos = position;
+                Log.d("first pos: ", Integer.toString(position));
                 if (row != null){
                     if (!listItems.get(position).isSelected()) {
+                        Log.d("second pos: ", Integer.toString(position));
                         if (currentlySelectedListItem == null) {
-                            row.setBackgroundResource(R.color.wallet_holo_blue_light);
+                            row.setBackgroundResource(R.drawable.card_state_pressed);
                             currentlySelectedListItem = listItems.get(position);
+                            Log.d("third pos: ", Integer.toString(position));
                             currentlySelectedRow = arg1;
 
                         }
                         else{
                             listItems.get(listItems.indexOf(currentlySelectedListItem)).toggleSelection();
                             currentlySelectedRow.setBackgroundResource(0);
-                            row.setBackgroundResource(R.color.wallet_holo_blue_light);
+//                            currentlySelectedRow.setPressed(false);
+                            row.setBackgroundResource(R.drawable.card_state_pressed);
                             currentlySelectedListItem = listItems.get(position);
+                            Log.d("fourth pos: ", Integer.toString(position));
                             currentlySelectedRow = arg1;
                         }
 
@@ -128,16 +144,17 @@ public class MainActivity extends ActionBarActivity {
                     else{
                         row.setBackgroundResource(0);
                         currentlySelectedListItem = null;
-//                        currentlySelectedRow = null;
                     }
                 }
                 listItems.get(position).toggleSelection();
+                Log.d("fifth pos: ", Integer.toString(position));
                 Log.d("selected", Boolean.toString(listItems.get(position).isSelected()));
 
 
 //                v.setBackgroundResource(R)
                 lastClickedRow = position;
-                String[] lastClickedArrayString = arg0.getItemAtPosition(position).toString().split(" ");
+                String[] lastClickedArrayString = arg0.getItemAtPosition(position + 1).toString().split(" ");
+                Log.d("six pos: ", Integer.toString(position));
                 lastClickedRowArray = new ArrayList<String>();
                 for(String s: lastClickedArrayString){
                     lastClickedRowArray.add(s);
@@ -163,6 +180,7 @@ public class MainActivity extends ActionBarActivity {
                 .build();
 
     }
+
 
     public void goToTaskInputScreen(){
         Intent taskInputIntent = new Intent(this, TaskInputScreen.class);
@@ -195,13 +213,16 @@ public class MainActivity extends ActionBarActivity {
     public void addToList(ArrayList<String> taskInputs){
         ListedItem listViewInput = new ListedItem(taskInputs.get(0), taskInputs.get(1), taskInputs.get(2), taskInputs.get(3));
         listItems.add(listViewInput);
-        adapter.notifyDataSetChanged();
+        cardArrayAdapter.updateList(listItems);
+
+//        cardArrayAdapter.notifyDataSetChanged();
         updateStorage();
         lastClickedRowArray = taskInputs;
 
     }
 
     public void clickedPlus(View v){
+
         lastClickedRowArray = new ArrayList<>();
         if(currentlySelectedRow != null){
             currentlySelectedRow.setBackgroundResource(0);
@@ -217,16 +238,10 @@ public class MainActivity extends ActionBarActivity {
         goToTaskInputScreen();
     }
 
-    public void addToListTest(View v){
-        ArrayList<String> taskInputs = new ArrayList<String>();
-        taskInputs.add("This");
-        taskInputs.add("is");
-        taskInputs.add("a");
-        taskInputs.add("test");
-        addToList(taskInputs);
-    }
 
     public void deleteSelectedItem(View v){
+//        Toast.makeText(this, Integer.toString(pos), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, findViewById(R.id.cardList).toString(),Toast.LENGTH_LONG).show();
         Assignment deletedAssignment = null;
         for (Assignment assignment: usersAssignments) {
             if (currentlySelectedListItem != null) {
@@ -251,7 +266,8 @@ public class MainActivity extends ActionBarActivity {
             currentlySelectedRow.setBackgroundResource(0);
         }
 //        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
-        adapter.notifyDataSetChanged();
+//        cardArrayAdapter.notifyDataSetChanged();
+        cardArrayAdapter.updateList(listItems);
         updateStorage();
     }
 
@@ -320,7 +336,11 @@ public class MainActivity extends ActionBarActivity {
                     String[] listEntryParts = listEntry.split(" : ");
                     listItems.add(new ListedItem(listEntryParts[0], listEntryParts[1], listEntryParts[2], listEntryParts[3]));
                 }
+//                Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG);
+//                cardArrayAdapter.updateList(listItems);
+//                cardArrayAdapter.notifyDataSetChanged();
             }
+
         }
         catch(IOException e){
             e.printStackTrace();
@@ -408,11 +428,13 @@ public class MainActivity extends ActionBarActivity {
 
             lastClickedRowArray = new ArrayList<String>();
             addToList(taskInputData);
+//            Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG);
             if (currentlySelectedListItem != null) {
                 listItems.remove(currentlySelectedListItem);
                 currentlySelectedListItem = null;
                 currentlySelectedRow.setBackgroundResource(0);
-                adapter.notifyDataSetChanged();
+//                cardArrayAdapter.notifyDataSetChanged();
+                cardArrayAdapter.updateList(listItems);
                 updateStorage();
             }
             usersAssignments.add(newAssignment);
