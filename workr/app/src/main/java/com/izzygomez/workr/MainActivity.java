@@ -605,11 +605,17 @@ public class MainActivity extends ActionBarActivity {
             freeTimeLeft = 0;
         }
         int mId = 001;
+        String contentTitle = "Time Left in Day";
+        //System.out.print(assignmentsDueToday.get(0).getSubject());
+        if (!assignmentsDueToday.isEmpty()){
+            contentTitle = (assignmentsDueToday.get(0).getSubject()+ " Due " + Integer.toString(freeTime-freeTimeLeft)+" Hours");
+        }
+
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("Time Left On Next Task")
-                        .setContentText(Integer.toString(freeTimeLeft)+" Hours")
+                        .setContentTitle(contentTitle)
+                        .setContentText(Integer.toString(freeTimeLeft)+" Hours Free Time Left in the Day")
                         .setOngoing(true)
                         .setProgress(freeTime,freeTimeLeft,false)
                         .setWhen(System.currentTimeMillis());
@@ -621,7 +627,7 @@ public class MainActivity extends ActionBarActivity {
         mBuilder.setContentIntent(pendingResultIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
+        // mId allows you to update the notification later on.
         mNotificationManager.notify(mId, mBuilder.build());
 
         ((TextView)findViewById(R.id.textViewToday)).setText(freeTimeLeft + "/" + freeTime);
