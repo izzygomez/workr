@@ -630,7 +630,7 @@ public class MainActivity extends ActionBarActivity {
         String contentTitle = "Time Left in Day";
         //System.out.print(assignmentsDueToday.get(0).getSubject());
         if (!assignmentsDueToday.isEmpty()){
-            contentTitle = (assignmentsDueToday.get(0).getSubject()+ " Due " + Integer.toString(freeTime-freeTimeLeft)+" Hours");
+            contentTitle = (assignmentsDueToday.get(0).getSubject()+ " Due " + Integer.toString(freeTime)+" Hours");
         }
 
         NotificationCompat.Builder mBuilder =
