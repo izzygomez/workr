@@ -104,7 +104,7 @@ public class MainActivity extends ActionBarActivity {
         listView = (ListView) findViewById(R.id.card_listView);
         taskListView.addHeaderView(new View(this));
         taskListView.addFooterView(new View(this));
-        cardArrayAdapter = new CardArrayAdapter(getApplicationContext(), R.layout.list_item_view, listItems);
+        cardArrayAdapter = new CardArrayAdapter(getBaseContext(), R.layout.list_item_view, listItems);
 
         taskListView.setAdapter(cardArrayAdapter);
 
