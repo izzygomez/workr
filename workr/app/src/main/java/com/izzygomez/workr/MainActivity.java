@@ -11,8 +11,10 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.Event;
 
 import android.accounts.AccountManager;
 import android.app.Dialog;
@@ -48,7 +50,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static com.izzygomez.workr.NotifyUser.calculateFreeTime;
@@ -768,6 +772,8 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+
+
     /**
      * TODO write description and comment code
      * @param freeTime the total number of hours between the current time and the future specified time
@@ -775,56 +781,32 @@ public class MainActivity extends ActionBarActivity {
      * @return the number of hours the user isn't busy, based on their Google Calendar events
      */
     public int parseEventList(int freeTime, Calendar finalDate)  {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm a z");
 
         int timeTakenForEvents = 0;
+        List<com.google.api.services.calendar.model.Event> totalEvents = new ArrayList<>();
+        try {
+            totalEvents =  new EventFetchTask(this).fetchEventsFromCalendar();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(totalEvents.toString());
+
+        for (com.google.api.services.calendar.model.Event event : totalEvents) {
+            String date = event.getStart().getDate().toString();
+//            Date tempDate = date.toDate();
+            Calendar calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(sdf.parse(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Log.d("string", sdf.format(calendar.toString()));
+        }
 
         List<Event> eventsBeforeDeadline = new ArrayList<>();
 
-        if (usersEvents.size() > 0) {
-            Log.d("events", usersEvents.toString());
 
-            /*
-            for( String event : usersEvents) {
-                if (event.contains(":")) {
-
-                    Calendar tempStart = Calendar.getInstance();
-                    Calendar tempEnd = Calendar.getInstance();
-
-                    String tempEvent = event.substring(event.indexOf("(") + 1, event.lastIndexOf(")") - 1);
-                    String start = tempEvent.substring(0, tempEvent.indexOf(","));
-                    start = start.substring(0, start.lastIndexOf("."));
-                    start = start.replace("T", " ");
-                    String end = tempEvent.substring(tempEvent.lastIndexOf(",") + 1, tempEvent.lastIndexOf("."));
-                    end = end.replace("T", " ");
-
-                    try {
-
-                        Date startDate = sdf.parse(start);
-                        tempStart.setTime(startDate);
-
-                        Date endDate = sdf.parse(end);
-                        tempEnd.setTime(endDate);
-
-                        if (!(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) > tempStart.get(Calendar.DAY_OF_MONTH)) &&
-                                !(finalDate.get(Calendar.DAY_OF_MONTH) < tempStart.get(Calendar.DAY_OF_MONTH))) {
-                            if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
-                                timeTakenForEvents += tempEnd.get(Calendar.HOUR_OF_DAY) - tempStart.get(Calendar.HOUR_OF_DAY);
-
-                            } else {
-                                timeTakenForEvents += 24 - tempStart.get(Calendar.HOUR_OF_DAY);
-
-                            }
-
-                        }
-                    } catch (ParseException pe) {
-                        pe.printStackTrace();
-                    }
-                }
-
-            }*/ // Debugging purposes TODO modify this to account for Event objects instead of strings
-
-        }
 
 
         Calendar tempTime = Calendar.getInstance();
@@ -838,37 +820,39 @@ public class MainActivity extends ActionBarActivity {
         // Checks each day for the hours that have/include an event
         // Sums up this number of hours for each day
         // ** Avoids double counting
-        while(!finalDate.before(tempTime)) {
-            hoursOfDayBusy = new ArrayList<>();
-            for (Event event: eventsBeforeDeadline) {
-                if (event.getStart().get(Calendar.DAY_OF_MONTH) == tempTime.get(Calendar.DAY_OF_MONTH)) {
-                    // For when we are in an event
-                    if (event.getStart().before(Calendar.getInstance()) && event.getEnd().after(Calendar.getInstance())) {
-                        for(int i=0; i<event.blockedOutHours.size(); i++) {
-                            // Only adds hours that are after 7 AM and not already populated and is after the current time
-                            if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
-                                    && event.getBlockedOutHours().get(i) >= 8
-                                    && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <= event.getBlockedOutHours().get(i)){
-                                hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
-                            }
-                        }
-                    } else {
-                        for(int i=0; i<event.blockedOutHours.size(); i++) {
-                            // Only adds hours that are after 7 AM and not already populated
-                            if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
-                                    && event.getBlockedOutHours().get(i) >= 8){
-                                hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
-                            }
-                        }
+        if (!eventsBeforeDeadline.isEmpty()) {
 
+            while (!finalDate.before(tempTime)) {
+                hoursOfDayBusy = new ArrayList<>();
+                for (Event event : eventsBeforeDeadline) {
+                    if (event.getStart().get(Calendar.DAY_OF_MONTH) == tempTime.get(Calendar.DAY_OF_MONTH)) {
+                        // For when we are in an event
+                        if (event.getStart().before(Calendar.getInstance()) && event.getEnd().after(Calendar.getInstance())) {
+                            for (int i = 0; i < event.blockedOutHours.size(); i++) {
+                                // Only adds hours that are after 7 AM and not already populated and is after the current time
+                                if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
+                                        && event.getBlockedOutHours().get(i) >= 8
+                                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <= event.getBlockedOutHours().get(i)) {
+                                    hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+                                }
+                            }
+                        } else {
+                            for (int i = 0; i < event.blockedOutHours.size(); i++) {
+                                // Only adds hours that are after 7 AM and not already populated
+                                if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
+                                        && event.getBlockedOutHours().get(i) >= 8) {
+                                    hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+                                }
+                            }
+
+                        }
+                        timeTakenForEvents += hoursOfDayBusy.size();
                     }
-                    timeTakenForEvents += hoursOfDayBusy.size();
                 }
+
+                tempTime.roll(Calendar.DAY_OF_MONTH, true);
             }
-
-            tempTime.roll(Calendar.DAY_OF_MONTH, true);
         }
-
         return freeTime - timeTakenForEvents;
     }
 }
