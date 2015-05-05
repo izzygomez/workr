@@ -1,6 +1,8 @@
 package com.izzygomez.workr;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.util.DateTime;
@@ -36,9 +38,8 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
      */
     @Override
     protected Void doInBackground(Void... params) {
-        /*try {
-            mActivity.clearEvents();
-            mActivity.updateEventList(fetchEventsFromCalendar());
+        try {
+            mActivity.usersEvents = fetchEventsFromCalendar();
 
         } catch (final GooglePlayServicesAvailabilityIOException availabilityException) {
             mActivity.showGooglePlayServicesAvailabilityErrorDialog(
@@ -50,10 +51,8 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
                     MainActivity.REQUEST_AUTHORIZATION);
 
         } catch (IOException e) {
-            mActivity.updateStatus("The following error occurred: " +
-                    e.getMessage());
+            Log.d("Error: ", e.getMessage());
         }
-        */
         return null;
     }
 

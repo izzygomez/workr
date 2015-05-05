@@ -65,7 +65,7 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<String> lastClickedRowArray = new ArrayList<String>(); //Array of Strings to pass to TaskInputScreen to preload input boxes during edits
     ArrayList<String> taskInputData = new ArrayList<String>(); //data that comes from the TaskInputScreen to be displayed
     ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();//title of each assignment
-    List<Event> usersEvents = new ArrayList<>();
+    List<com.google.api.services.calendar.model.Event> usersEvents = new ArrayList<>();
     ListedItem currentlySelectedListItem;
     View currentlySelectedRow;
     ListView listView;
@@ -100,7 +100,7 @@ public class MainActivity extends ActionBarActivity {
         populateListItemsFromFile();
 
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
-        adapter = new ArrayAdapter<ListedItem>(this, android.R.layout.simple_list_item_1, listItems);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
 
 
         listView = (ListView) findViewById(R.id.card_listView);
@@ -504,31 +504,6 @@ public class MainActivity extends ActionBarActivity {
                 // mStatusText.setText("No network connection available."); // Debugging purposes TODO delete this
             }
         }
-    }
-
-    /**
-     * Fill the event display with the given List of strings; called from
-     * background threads and async tasks that need to update the UI (in the
-     * UI thread).
-     * @param events a List of Strings to populate the event display with.
-     */
-    public void updateEventList(final List<Event> events) {
-        usersEvents = events;
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (events == null) {
-                    // mStatusText.setText("Error retrieving events!"); // Debugging purposes TODO delete this
-                } else if (events.size() == 0) {
-                    // mStatusText.setText("No upcoming events found."); // Debugging purposes TODO delete this
-                } else {
-                    /*mStatusText.setText("Your upcoming events retrieved using" +
-                            " the Google Calendar API:");
-                    mEventText.setText(TextUtils.join("\n\n", events));*/ // Debugging purposes TODO delete this
-                }
-            }
-        });
     }
 
     /**
