@@ -11,8 +11,11 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.util.DateTime;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.CalendarNotification;
+import com.google.api.services.calendar.model.Event;
 
 import android.accounts.AccountManager;
 import android.app.Dialog;
@@ -30,24 +33,23 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<String> lastClickedRowArray = new ArrayList<String>(); //Array of Strings to pass to TaskInputScreen to preload input boxes during edits
     ArrayList<String> taskInputData = new ArrayList<String>(); //data that comes from the TaskInputScreen to be displayed
     ArrayList<Assignment> usersAssignments = new ArrayList<Assignment>();//title of each assignment
-    List<Event> usersEvents = new ArrayList<>();
+    List<com.google.api.services.calendar.model.Event> usersEvents = new ArrayList<>();
     ListedItem currentlySelectedListItem;
     View currentlySelectedRow;
     ListView listView;
@@ -75,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
      * Calendar API. Note: Do not confuse this class with the
      * com.google.api.services.calendar.model.Calendar class.
      */
-    com.google.api.services.calendar.Calendar mService;
+    protected com.google.api.services.calendar.Calendar mService;
 
     GoogleAccountCredential credential;
 
@@ -96,13 +98,13 @@ public class MainActivity extends ActionBarActivity {
         populateListItemsFromFile();
 
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
-        adapter = new ArrayAdapter<ListedItem>(this, android.R.layout.simple_list_item_1, listItems);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
 
 
         listView = (ListView) findViewById(R.id.card_listView);
         taskListView.addHeaderView(new View(this));
         taskListView.addFooterView(new View(this));
-        cardArrayAdapter = new CardArrayAdapter(getApplicationContext(), R.layout.list_item_view, listItems);
+        cardArrayAdapter = new CardArrayAdapter(getBaseContext(), R.layout.list_item_view, listItems);
 
         taskListView.setAdapter(cardArrayAdapter);
 
@@ -113,9 +115,6 @@ public class MainActivity extends ActionBarActivity {
 
 //        taskListView.setAdapter(adapter);
 //        Log.d("view", findViewById(R.id.cardList).toString());
-
-        // PHILLY'S CODE
-        calcFreeTime();
 
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
@@ -182,6 +181,8 @@ public class MainActivity extends ActionBarActivity {
                 .setApplicationName("Workr")
                 .build();
 
+        // PHILLY'S CODE
+        calcFreeTime();
     }
 
 
@@ -504,31 +505,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
-     * Fill the event display with the given List of strings; called from
-     * background threads and async tasks that need to update the UI (in the
-     * UI thread).
-     * @param events a List of Strings to populate the event display with.
-     */
-    public void updateEventList(final List<Event> events) {
-        usersEvents = events;
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (events == null) {
-                    // mStatusText.setText("Error retrieving events!"); // Debugging purposes TODO delete this
-                } else if (events.size() == 0) {
-                    // mStatusText.setText("No upcoming events found."); // Debugging purposes TODO delete this
-                } else {
-                    /*mStatusText.setText("Your upcoming events retrieved using" +
-                            " the Google Calendar API:");
-                    mEventText.setText(TextUtils.join("\n\n", events));*/ // Debugging purposes TODO delete this
-                }
-            }
-        });
-    }
-
-    /**
      * Starts an activity in Google Play Services so the user can pick an
      * account.
      */
@@ -628,9 +604,8 @@ public class MainActivity extends ActionBarActivity {
         }
         int mId = 001;
         String contentTitle = "Time Left in Day";
-        //System.out.print(assignmentsDueToday.get(0).getSubject());
         if (!assignmentsDueToday.isEmpty()){
-            contentTitle = (assignmentsDueToday.get(0).getSubject()+ " Due " + Integer.toString(freeTime-freeTimeLeft)+" Hours");
+            contentTitle = (assignmentsDueToday.get(0).getSubject()+ " Due " + Integer.toString(freeTime)+" Hours");
         }
 
         NotificationCompat.Builder mBuilder =
@@ -736,35 +711,46 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    /**
-     * Event class used for parsing the Google Calendar.
-     * Used in finding the hours blocked out during the day
-     */
-    public class Event {
-        private Calendar start;
-        private Calendar end;
-        private List<Integer> blockedOutHours = new ArrayList<>();
+    public class WorkrEvent {
+        private Calendar start = Calendar.getInstance();
+        private Calendar end = Calendar.getInstance();
+        private ArrayList<Integer> blockedOutHours = new ArrayList<>();
 
-        public Event(Calendar start, Calendar end) {
+        public WorkrEvent(Calendar start, Calendar end) {
             this.start = start;
             this.end = end;
+            Calendar tempDate = Calendar.getInstance();
+            tempDate.setTime(this.start.getTime());
+            tempDate.set(Calendar.MINUTE, 0);
+            tempDate.set(Calendar.SECOND, 0);
+            tempDate.set(Calendar.MILLISECOND, 0);
 
-            // Calculates the hours of day that the event blocks out
-            Calendar tempTime = start;
-            while(tempTime.before(end)) {
-                blockedOutHours.add(tempTime.get(Calendar.HOUR_OF_DAY));
-                tempTime.roll(Calendar.HOUR_OF_DAY, true);
+            ArrayList<Integer> blockedOutHours = new ArrayList<>();
+
+            long endMillis = this.end.getTimeInMillis();
+            long startMillis = this.start.getTimeInMillis();
+            long hoursBetween = TimeUnit.MILLISECONDS.toMinutes(Math.abs(endMillis - startMillis));
+
+            if (hoursBetween % 60 < 30) {
+                hoursBetween = hoursBetween/60;
+            } else {
+
+                hoursBetween = (hoursBetween / 60) + 1;
             }
 
+            for(int i=0; i<hoursBetween; i++) {
+                blockedOutHours.add(tempDate.get(Calendar.HOUR_OF_DAY));
+                tempDate.roll(Calendar.HOUR_OF_DAY,true);
+            }
+            System.out.println(String.valueOf(blockedOutHours));
+            this.blockedOutHours = blockedOutHours;
         }
-        public Calendar getStart() {
-            return this.start;
-        }
-        public Calendar getEnd() {
-            return this.end;
-        }
-        public List<Integer> getBlockedOutHours() {
-            return blockedOutHours;
+        public Calendar getStart() { return this.start; }
+        public Calendar getEnd() { return this.end; }
+
+        public ArrayList<Integer> getBlockedOutHours () {
+
+            return this.blockedOutHours;
         }
     }
 
@@ -775,58 +761,29 @@ public class MainActivity extends ActionBarActivity {
      * @return the number of hours the user isn't busy, based on their Google Calendar events
      */
     public int parseEventList(int freeTime, Calendar finalDate)  {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
         int timeTakenForEvents = 0;
-
-        List<Event> eventsBeforeDeadline = new ArrayList<>();
-
-        if (usersEvents.size() > 0) {
-            Log.d("events", usersEvents.toString());
-
-            /*
-            for( String event : usersEvents) {
-                if (event.contains(":")) {
-
-                    Calendar tempStart = Calendar.getInstance();
-                    Calendar tempEnd = Calendar.getInstance();
-
-                    String tempEvent = event.substring(event.indexOf("(") + 1, event.lastIndexOf(")") - 1);
-                    String start = tempEvent.substring(0, tempEvent.indexOf(","));
-                    start = start.substring(0, start.lastIndexOf("."));
-                    start = start.replace("T", " ");
-                    String end = tempEvent.substring(tempEvent.lastIndexOf(",") + 1, tempEvent.lastIndexOf("."));
-                    end = end.replace("T", " ");
-
-                    try {
-
-                        Date startDate = sdf.parse(start);
-                        tempStart.setTime(startDate);
-
-                        Date endDate = sdf.parse(end);
-                        tempEnd.setTime(endDate);
-
-                        if (!(Calendar.getInstance().get(Calendar.DAY_OF_MONTH) > tempStart.get(Calendar.DAY_OF_MONTH)) &&
-                                !(finalDate.get(Calendar.DAY_OF_MONTH) < tempStart.get(Calendar.DAY_OF_MONTH))) {
-                            if (tempEnd.get(Calendar.DAY_OF_MONTH) == tempStart.get(Calendar.DAY_OF_MONTH)) {
-                                timeTakenForEvents += tempEnd.get(Calendar.HOUR_OF_DAY) - tempStart.get(Calendar.HOUR_OF_DAY);
-
-                            } else {
-                                timeTakenForEvents += 24 - tempStart.get(Calendar.HOUR_OF_DAY);
-
-                            }
-
-                        }
-                    } catch (ParseException pe) {
-                        pe.printStackTrace();
-                    }
-                }
-
-            }*/ // Debugging purposes TODO modify this to account for Event objects instead of strings
+        List<WorkrEvent> eventsBeforeDeadline = new ArrayList<>();
+        for (com.google.api.services.calendar.model.Event event : usersEvents) {
+            Calendar tempStart = Calendar.getInstance();
+            try {
+                tempStart.setTime(sdf.parse(event.getStart().getDateTime().toString()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Calendar tempEnd = Calendar.getInstance();
+            try {
+                tempEnd.setTime(sdf.parse(event.getEnd().getDateTime().toString()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (!tempEnd.before(Calendar.getInstance())
+                    && (!tempStart.after(finalDate)) || tempStart.get(Calendar.DAY_OF_MONTH) == finalDate.get(Calendar.DAY_OF_MONTH)) {
+                eventsBeforeDeadline.add(new WorkrEvent(tempStart, tempEnd));
+            }
 
         }
-
-
         Calendar tempTime = Calendar.getInstance();
         tempTime.set(Calendar.HOUR_OF_DAY, 0);
         tempTime.set(Calendar.MINUTE, 0);
@@ -838,37 +795,41 @@ public class MainActivity extends ActionBarActivity {
         // Checks each day for the hours that have/include an event
         // Sums up this number of hours for each day
         // ** Avoids double counting
-        while(!finalDate.before(tempTime)) {
-            hoursOfDayBusy = new ArrayList<>();
-            for (Event event: eventsBeforeDeadline) {
-                if (event.getStart().get(Calendar.DAY_OF_MONTH) == tempTime.get(Calendar.DAY_OF_MONTH)) {
-                    // For when we are in an event
-                    if (event.getStart().before(Calendar.getInstance()) && event.getEnd().after(Calendar.getInstance())) {
-                        for(int i=0; i<event.blockedOutHours.size(); i++) {
-                            // Only adds hours that are after 7 AM and not already populated and is after the current time
-                            if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
-                                    && event.getBlockedOutHours().get(i) >= 8
-                                    && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <= event.getBlockedOutHours().get(i)){
-                                hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+        if (!eventsBeforeDeadline.isEmpty()) {
+            while (finalDate.get(Calendar.DAY_OF_MONTH) >= tempTime.get(Calendar.DAY_OF_MONTH)) {
+                hoursOfDayBusy = new ArrayList<>();
+                for (WorkrEvent event : eventsBeforeDeadline) {
+                    if (event.getStart().get(Calendar.DAY_OF_MONTH) == tempTime.get(Calendar.DAY_OF_MONTH)) {
+                        // For when we are in an event
+                        System.out.println(event.getBlockedOutHours().size());
+
+                        if (event.getStart().before(Calendar.getInstance()) && event.getEnd().after(Calendar.getInstance())) {
+                            for (int i = 0; i < event.getBlockedOutHours().size(); i++) {
+                                // Only adds hours that are after 7 AM and not already populated and is after the current time
+                                if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
+                                        && event.getBlockedOutHours().get(i) >= 8
+                                        && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <= event.getBlockedOutHours().get(i)) {
+                                    hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+                                }
                             }
-                        }
-                    } else {
-                        for(int i=0; i<event.blockedOutHours.size(); i++) {
-                            // Only adds hours that are after 7 AM and not already populated
-                            if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
-                                    && event.getBlockedOutHours().get(i) >= 8){
-                                hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+                        } else {
+                            for (int i = 0; i < event.getBlockedOutHours().size(); i++) {
+                                // Only adds hours that are after 7 AM and not already populated
+                                if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
+                                        && event.getBlockedOutHours().get(i) >= 8) {
+                                    hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+
+                                }
                             }
+
                         }
 
                     }
-                    timeTakenForEvents += hoursOfDayBusy.size();
                 }
+                timeTakenForEvents += hoursOfDayBusy.size();
+                tempTime.roll(Calendar.DAY_OF_MONTH, true);
             }
-
-            tempTime.roll(Calendar.DAY_OF_MONTH, true);
         }
-
         return freeTime - timeTakenForEvents;
     }
 }
