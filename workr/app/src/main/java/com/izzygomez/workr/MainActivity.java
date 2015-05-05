@@ -711,61 +711,10 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-//    /**
-//     * Event class used for parsing the Google Calendar.
-//     * Used in finding the hours blocked out during the day
-//     */
-//    public class Event {
-//        private Calendar start;
-//        private Calendar end;
-//        private List<Integer> blockedOutHours = new ArrayList<>();
-//
-//        public Event(Calendar start, Calendar end) {
-//            this.start = start;
-//            this.end = end;
-//
-//            // Calculates the hours of day that the event blocks out
-//            Calendar tempTime = start;
-//            while(tempTime.before(end)) {
-//                blockedOutHours.add(tempTime.get(Calendar.HOUR_OF_DAY));
-//                tempTime.roll(Calendar.HOUR_OF_DAY, true);
-//            }
-//
-//        }
-//        public Calendar getStart() {
-//            return this.start;
-//        }
-//        public Calendar getEnd() {
-//            return this.end;
-//        }
-//        public List<Integer> getBlockedOutHours() {
-//            return blockedOutHours;
-//        }
-//    }
-
-
     public class WorkrEvent {
         private Calendar start = Calendar.getInstance();
         private Calendar end = Calendar.getInstance();
         private ArrayList<Integer> blockedOutHours = new ArrayList<>();
-
-        public WorkrEvent(DateTime start, DateTime end) {
-            DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm a z");
-            Date tempDate = null;
-            try {
-                tempDate = sdf.parse(start.toString());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            this.start.setTime(tempDate);
-
-            try {
-                tempDate = sdf.parse(end.toString());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            this.end.setTime(tempDate);
-        }
 
         public WorkrEvent(Calendar start, Calendar end) {
             this.start = start;
@@ -780,13 +729,20 @@ public class MainActivity extends ActionBarActivity {
 
             long endMillis = this.end.getTimeInMillis();
             long startMillis = this.start.getTimeInMillis();
-            long hoursBetween = TimeUnit.MILLISECONDS.toHours(Math.abs(endMillis - startMillis));
+            long hoursBetween = TimeUnit.MILLISECONDS.toMinutes(Math.abs(endMillis - startMillis));
 
+            if (hoursBetween % 60 < 30) {
+                hoursBetween = hoursBetween/60;
+            } else {
+
+                hoursBetween = (hoursBetween / 60) + 1;
+            }
 
             for(int i=0; i<hoursBetween; i++) {
                 blockedOutHours.add(tempDate.get(Calendar.HOUR_OF_DAY));
                 tempDate.roll(Calendar.HOUR_OF_DAY,true);
             }
+            System.out.println(String.valueOf(blockedOutHours));
             this.blockedOutHours = blockedOutHours;
         }
         public Calendar getStart() { return this.start; }
