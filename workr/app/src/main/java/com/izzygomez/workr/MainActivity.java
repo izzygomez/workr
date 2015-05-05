@@ -79,7 +79,7 @@ public class MainActivity extends ActionBarActivity {
      * Calendar API. Note: Do not confuse this class with the
      * com.google.api.services.calendar.model.Calendar class.
      */
-    com.google.api.services.calendar.Calendar mService;
+    protected com.google.api.services.calendar.Calendar mService;
 
     GoogleAccountCredential credential;
 
@@ -117,9 +117,6 @@ public class MainActivity extends ActionBarActivity {
 
 //        taskListView.setAdapter(adapter);
 //        Log.d("view", findViewById(R.id.cardList).toString());
-
-        // PHILLY'S CODE
-        calcFreeTime();
 
         taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
@@ -186,6 +183,8 @@ public class MainActivity extends ActionBarActivity {
                 .setApplicationName("Workr")
                 .build();
 
+        // PHILLY'S CODE
+        calcFreeTime();
     }
 
 

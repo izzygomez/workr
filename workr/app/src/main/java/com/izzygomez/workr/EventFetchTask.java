@@ -72,8 +72,13 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
         // List<String> eventStrings = new ArrayList<>(); // Debugging purposes TODO delete this
 
         // Find all calendars from user that are NOT deleted and NOT hidden
-        CalendarList calendarList = mActivity.mService.calendarList().list().execute();
-        List<CalendarListEntry> allCalendars = calendarList.getItems();
+        List<CalendarListEntry> allCalendars = new ArrayList<>();
+        String pageToken = null;
+        do {
+            CalendarList calendarList = mActivity.mService.calendarList().list().setPageToken(pageToken).execute();
+            allCalendars.addAll(calendarList.getItems());
+            pageToken = calendarList.getNextPageToken();
+        } while (pageToken != null);
 
         for (CalendarListEntry calendarListEntry : allCalendars) {
             // If the calendar is *selected* (i.e. shows up in the GCal UI for user)
