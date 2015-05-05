@@ -51,6 +51,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.izzygomez.workr.NotifyUser.calculateFreeTime;
 
@@ -603,7 +604,6 @@ public class MainActivity extends ActionBarActivity {
         }
         int mId = 001;
         String contentTitle = "Time Left in Day";
-        //System.out.print(assignmentsDueToday.get(0).getSubject());
         if (!assignmentsDueToday.isEmpty()){
             contentTitle = (assignmentsDueToday.get(0).getSubject()+ " Due " + Integer.toString(freeTime)+" Hours");
         }
@@ -747,6 +747,7 @@ public class MainActivity extends ActionBarActivity {
     public class WorkrEvent {
         private Calendar start = Calendar.getInstance();
         private Calendar end = Calendar.getInstance();
+        private ArrayList<Integer> blockedOutHours = new ArrayList<>();
 
         public WorkrEvent(DateTime start, DateTime end) {
             DateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm a z");
@@ -769,25 +770,31 @@ public class MainActivity extends ActionBarActivity {
         public WorkrEvent(Calendar start, Calendar end) {
             this.start = start;
             this.end = end;
-        }
-        public Calendar getStart() { return this.start; }
-        public Calendar getEnd() { return this.end; }
-
-        public ArrayList<Integer> getBlockedOutHours () {
             Calendar tempDate = Calendar.getInstance();
             tempDate.setTime(this.start.getTime());
-            tempDate.set(Calendar.HOUR_OF_DAY, 0);
             tempDate.set(Calendar.MINUTE, 0);
             tempDate.set(Calendar.SECOND, 0);
             tempDate.set(Calendar.MILLISECOND, 0);
 
             ArrayList<Integer> blockedOutHours = new ArrayList<>();
 
-            while (tempDate.before(this.end)) {
+            long endMillis = this.end.getTimeInMillis();
+            long startMillis = this.start.getTimeInMillis();
+            long hoursBetween = TimeUnit.MILLISECONDS.toHours(Math.abs(endMillis - startMillis));
+
+
+            for(int i=0; i<hoursBetween; i++) {
                 blockedOutHours.add(tempDate.get(Calendar.HOUR_OF_DAY));
                 tempDate.roll(Calendar.HOUR_OF_DAY,true);
             }
-            return blockedOutHours;
+            this.blockedOutHours = blockedOutHours;
+        }
+        public Calendar getStart() { return this.start; }
+        public Calendar getEnd() { return this.end; }
+
+        public ArrayList<Integer> getBlockedOutHours () {
+
+            return this.blockedOutHours;
         }
     }
 
@@ -802,7 +809,6 @@ public class MainActivity extends ActionBarActivity {
 
         int timeTakenForEvents = 0;
         List<WorkrEvent> eventsBeforeDeadline = new ArrayList<>();
-        System.out.println(String.valueOf(usersEvents.size()));
         for (com.google.api.services.calendar.model.Event event : usersEvents) {
             Calendar tempStart = Calendar.getInstance();
             try {
@@ -834,14 +840,14 @@ public class MainActivity extends ActionBarActivity {
         // Sums up this number of hours for each day
         // ** Avoids double counting
         if (!eventsBeforeDeadline.isEmpty()) {
-
-            while (!finalDate.before(tempTime)) {
+            while (finalDate.get(Calendar.DAY_OF_MONTH) >= tempTime.get(Calendar.DAY_OF_MONTH)) {
                 hoursOfDayBusy = new ArrayList<>();
                 for (WorkrEvent event : eventsBeforeDeadline) {
                     if (event.getStart().get(Calendar.DAY_OF_MONTH) == tempTime.get(Calendar.DAY_OF_MONTH)) {
                         // For when we are in an event
-                        if (event.getStart().before(Calendar.getInstance()) && event.getEnd().after(Calendar.getInstance())) {
+                        System.out.println(event.getBlockedOutHours().size());
 
+                        if (event.getStart().before(Calendar.getInstance()) && event.getEnd().after(Calendar.getInstance())) {
                             for (int i = 0; i < event.getBlockedOutHours().size(); i++) {
                                 // Only adds hours that are after 7 AM and not already populated and is after the current time
                                 if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
@@ -851,24 +857,23 @@ public class MainActivity extends ActionBarActivity {
                                 }
                             }
                         } else {
-                            System.out.println("HI");
                             for (int i = 0; i < event.getBlockedOutHours().size(); i++) {
                                 // Only adds hours that are after 7 AM and not already populated
                                 if (!hoursOfDayBusy.contains(event.getBlockedOutHours().get(i))
                                         && event.getBlockedOutHours().get(i) >= 8) {
                                     hoursOfDayBusy.add(event.getBlockedOutHours().get(i));
+
                                 }
                             }
 
                         }
-                        timeTakenForEvents += hoursOfDayBusy.size();
+
                     }
                 }
-
+                timeTakenForEvents += hoursOfDayBusy.size();
                 tempTime.roll(Calendar.DAY_OF_MONTH, true);
             }
         }
-        System.out.println("boo " + String.valueOf(timeTakenForEvents));
         return freeTime - timeTakenForEvents;
     }
 }
