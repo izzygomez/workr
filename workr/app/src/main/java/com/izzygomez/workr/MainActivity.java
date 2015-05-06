@@ -70,6 +70,7 @@ public class MainActivity extends ActionBarActivity {
     CardArrayAdapter cardArrayAdapter;
     int pos;
     public View row;
+    ArrayList<Integer> timeTakenForEvents;
 
     // <Izzy's variables>
     /**
@@ -99,7 +100,12 @@ public class MainActivity extends ActionBarActivity {
 
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
+        // Initializes the time lost to calendar events to 0
+        timeTakenForEvents = new ArrayList<>();
 
+        timeTakenForEvents.add(0,0);
+        timeTakenForEvents.add(1,0);
+        timeTakenForEvents.add(2,0);
 
         listView = (ListView) findViewById(R.id.card_listView);
         taskListView.addHeaderView(new View(this));
@@ -111,7 +117,6 @@ public class MainActivity extends ActionBarActivity {
 //        cardArrayAdapter.notifyDataSetChanged();
         cardArrayAdapter.updateList(listItems);
         updateStorage();
-        Log.d("listItems",listItems.toString());
 
 //        taskListView.setAdapter(adapter);
 //        Log.d("view", findViewById(R.id.cardList).toString());
@@ -321,6 +326,21 @@ public class MainActivity extends ActionBarActivity {
         catch(IOException e){
             e.printStackTrace();
         }
+
+        String FILENAMECALENDAR = "workr_file_calendar";
+        deleteFile(FILENAMECALENDAR);
+        String lineCalendar = "";
+        try {
+            FileOutputStream fos = openFileOutput(FILENAMECALENDAR, Context.MODE_PRIVATE);
+            for (Integer item : timeTakenForEvents) {
+                lineAssignment = item.toString() + "\n";
+                fos.write(lineAssignment.getBytes());
+            }
+            fos.close();
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
     // TODO Remember to add some check that makes sure that you can't use colons in any of your task entries or transform them to something
@@ -349,6 +369,30 @@ public class MainActivity extends ActionBarActivity {
         catch(IOException e){
             e.printStackTrace();
         }
+
+        StringBuilder builderCalendar = new StringBuilder();
+        int chCalendar;
+        String[] listItemsToStringArrayCalendar;
+        try{
+            FileInputStream fis = openFileInput("workr_file_calendar");
+            while((chCalendar = fis.read()) != -1){
+                builderCalendar.append((char)chCalendar);
+            }
+            if (builderCalendar.toString().length() > 0) {
+                listItemsToStringArrayCalendar = builderCalendar.toString().split("\n");
+                timeTakenForEvents.set(0, Integer.getInteger(listItemsToStringArrayCalendar[0]));
+                timeTakenForEvents.set(1, Integer.getInteger(listItemsToStringArrayCalendar[1]));
+                timeTakenForEvents.set(2, Integer.getInteger(listItemsToStringArrayCalendar[2]));
+//                Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG);
+//                cardArrayAdapter.updateList(listItems);
+//                cardArrayAdapter.notifyDataSetChanged();
+            }
+
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+
         StringBuilder builderAssignment = new StringBuilder();
         int chAssignment;
         String[] listItemsToStringArrayAssignment;
@@ -592,7 +636,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         // subtracts time in calendar events from the total time the user has today
-        int freeTime = parseEventList(totalTimeToday, today);
+        int freeTime = parseEventList(totalTimeToday, today, "today");
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueToday);
 
         // Doesn't allow the two text fields to Display less than 0/0 for progress
@@ -656,7 +700,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         // subtracts time in calendar events from the total time the user has this week
-        int freeTime = parseEventList(totalTimeThisWeek, endOfTheWeek);
+        int freeTime = parseEventList(totalTimeThisWeek, endOfTheWeek, "week");
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
 
         // Doesn't allow the two text fields to Display less than 0/0 for progress
@@ -694,7 +738,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         // subtracts time in calendar events from the total time the user has this week
-        int freeTime = parseEventList(totalTimeThisWeek, nextWeek);
+        int freeTime = parseEventList(totalTimeThisWeek, nextWeek, "7days");
         int freeTimeLeft =  calculateFreeTime(freeTime, assignmentsDueBeforeMonday);
 
         // Doesn't allow the two text fields to Display less than 0/0 for progress
@@ -742,7 +786,6 @@ public class MainActivity extends ActionBarActivity {
                 blockedOutHours.add(tempDate.get(Calendar.HOUR_OF_DAY));
                 tempDate.roll(Calendar.HOUR_OF_DAY,true);
             }
-            System.out.println(String.valueOf(blockedOutHours));
             this.blockedOutHours = blockedOutHours;
         }
         public Calendar getStart() { return this.start; }
@@ -760,11 +803,19 @@ public class MainActivity extends ActionBarActivity {
      * @param finalDate the future specified time an assignment may be due or the end of the week
      * @return the number of hours the user isn't busy, based on their Google Calendar events
      */
-    public int parseEventList(int freeTime, Calendar finalDate)  {
+    public int parseEventList(int freeTime, Calendar finalDate, String period)  {
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
-        int timeTakenForEvents = 0;
+        Integer tempTimeTakenForEvents = 0;
         List<WorkrEvent> eventsBeforeDeadline = new ArrayList<>();
+        if (usersEvents.size() == 0) {
+            if (period == "today") {
+                tempTimeTakenForEvents = timeTakenForEvents.get(0);
+            } else if (period == "week") {
+                tempTimeTakenForEvents = timeTakenForEvents.get(1);
+            } else {
+                tempTimeTakenForEvents = timeTakenForEvents.get(2);
+            }
+        }
         for (com.google.api.services.calendar.model.Event event : usersEvents) {
             Calendar tempStart = Calendar.getInstance();
             try {
@@ -826,10 +877,17 @@ public class MainActivity extends ActionBarActivity {
 
                     }
                 }
-                timeTakenForEvents += hoursOfDayBusy.size();
+                tempTimeTakenForEvents += hoursOfDayBusy.size();
                 tempTime.roll(Calendar.DAY_OF_MONTH, true);
             }
         }
-        return freeTime - timeTakenForEvents;
+        if (period == "today") {
+            timeTakenForEvents.set(0, tempTimeTakenForEvents);
+        } else if (period == "week") {
+            timeTakenForEvents.set(1, tempTimeTakenForEvents);
+        } else {
+            timeTakenForEvents.set(2, tempTimeTakenForEvents);
+        }
+        return freeTime - tempTimeTakenForEvents;
     }
 }
