@@ -96,16 +96,17 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        timeTakenForEvents = new ArrayList<>(3);
+        timeTakenForEvents.add(0);
+        timeTakenForEvents.add(0);
+        timeTakenForEvents.add(0);
         populateListItemsFromFile();
 
         ListView taskListView = (ListView) findViewById(R.id.listViewOfTasks);
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listItems);
         // Initializes the time lost to calendar events to 0
-        timeTakenForEvents = new ArrayList<>();
 
-        timeTakenForEvents.add(0,0);
-        timeTakenForEvents.add(1,0);
-        timeTakenForEvents.add(2,0);
+
 
         listView = (ListView) findViewById(R.id.card_listView);
         taskListView.addHeaderView(new View(this));
@@ -332,10 +333,12 @@ public class MainActivity extends ActionBarActivity {
         String lineCalendar = "";
         try {
             FileOutputStream fos = openFileOutput(FILENAMECALENDAR, Context.MODE_PRIVATE);
-            for (Integer item : timeTakenForEvents) {
-                lineAssignment = item.toString() + "\n";
+            for (int i = 0; i <3; i++) {
+//                System.out.println();
+                lineAssignment = timeTakenForEvents.get(i).toString() + "\n";
                 fos.write(lineAssignment.getBytes());
             }
+            System.out.println(lineAssignment.toString() + "HI");
             fos.close();
         }
         catch(IOException e){
@@ -378,16 +381,26 @@ public class MainActivity extends ActionBarActivity {
             while((chCalendar = fis.read()) != -1){
                 builderCalendar.append((char)chCalendar);
             }
-            if (builderCalendar.toString().length() > 0) {
-                listItemsToStringArrayCalendar = builderCalendar.toString().split("\n");
-                Log.d("suspect",listItemsToStringArrayCalendar.toString());
-                timeTakenForEvents.set(0, Integer.getInteger(listItemsToStringArrayCalendar[0]));
-                timeTakenForEvents.set(1, Integer.getInteger(listItemsToStringArrayCalendar[1]));
-                timeTakenForEvents.set(2, Integer.getInteger(listItemsToStringArrayCalendar[2]));
+
+            listItemsToStringArrayCalendar = builderCalendar.toString().split("\n");
+//                timeTakenForEvents =
+
+            for (int i = 0; i < 3; i++) {
+                if ((listItemsToStringArrayCalendar.length <= i) || Integer.getInteger(listItemsToStringArrayCalendar[i]) == null ) {
+                    timeTakenForEvents.set(i, 0);
+                } else {
+                    timeTakenForEvents.set(i, Integer.getInteger(listItemsToStringArrayCalendar[i]));
+                }
+            }
+            System.out.println(timeTakenForEvents);
+//                timeTakenForEvents.set(0, Integer.getInteger(listItemsToStringArrayCalendar[0]));
+//
+//                timeTakenForEvents.set(1, Integer.getInteger(listItemsToStringArrayCalendar[1]));
+//                timeTakenForEvents.set(2, Integer.getInteger(listItemsToStringArrayCalendar[2]));
 //                Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG);
 //                cardArrayAdapter.updateList(listItems);
 //                cardArrayAdapter.notifyDataSetChanged();
-            }
+
 
         }
         catch(IOException e){
@@ -847,6 +860,7 @@ public class MainActivity extends ActionBarActivity {
         // Checks each day for the hours that have/include an event
         // Sums up this number of hours for each day
         // ** Avoids double counting
+        System.out.println(usersEvents.toString()+"hi");
         if (!eventsBeforeDeadline.isEmpty()) {
             while (finalDate.get(Calendar.DAY_OF_MONTH) >= tempTime.get(Calendar.DAY_OF_MONTH)) {
                 hoursOfDayBusy = new ArrayList<>();
@@ -889,6 +903,7 @@ public class MainActivity extends ActionBarActivity {
         } else {
             timeTakenForEvents.set(2, tempTimeTakenForEvents);
         }
+        System.out.println(timeTakenForEvents.toString());
         return freeTime - tempTimeTakenForEvents;
     }
 }
