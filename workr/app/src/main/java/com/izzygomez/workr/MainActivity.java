@@ -380,6 +380,7 @@ public class MainActivity extends ActionBarActivity {
             }
             if (builderCalendar.toString().length() > 0) {
                 listItemsToStringArrayCalendar = builderCalendar.toString().split("\n");
+                Log.d("suspect",listItemsToStringArrayCalendar.toString());
                 timeTakenForEvents.set(0, Integer.getInteger(listItemsToStringArrayCalendar[0]));
                 timeTakenForEvents.set(1, Integer.getInteger(listItemsToStringArrayCalendar[1]));
                 timeTakenForEvents.set(2, Integer.getInteger(listItemsToStringArrayCalendar[2]));
