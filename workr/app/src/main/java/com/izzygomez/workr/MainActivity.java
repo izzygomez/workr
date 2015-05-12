@@ -169,6 +169,7 @@ public class MainActivity extends ActionBarActivity {
                     lastClickedRowArray.add(s);
                 }
             }
+
         });
 
 //
@@ -190,6 +191,7 @@ public class MainActivity extends ActionBarActivity {
 
         // PHILLY'S CODE
         calcFreeTime();
+        System.out.println(usersAssignments.toString());
     }
 
 
@@ -346,10 +348,9 @@ public class MainActivity extends ActionBarActivity {
             FileOutputStream fos = openFileOutput(FILENAMECALENDAR, Context.MODE_PRIVATE);
             for (int i = 0; i <3; i++) {
 //                System.out.println();
-                lineAssignment = timeTakenForEvents.get(i).toString() + "\n";
-                fos.write(lineAssignment.getBytes());
+                lineCalendar = timeTakenForEvents.get(i).toString() + "\n";
+                fos.write(lineCalendar.getBytes());
             }
-            System.out.println(lineAssignment.toString() + "HI");
             fos.close();
         }
         catch(IOException e){
@@ -403,7 +404,6 @@ public class MainActivity extends ActionBarActivity {
                     timeTakenForEvents.set(i, Integer.getInteger(listItemsToStringArrayCalendar[i]));
                 }
             }
-            System.out.println(timeTakenForEvents);
 //                timeTakenForEvents.set(0, Integer.getInteger(listItemsToStringArrayCalendar[0]));
 //
 //                timeTakenForEvents.set(1, Integer.getInteger(listItemsToStringArrayCalendar[1]));
@@ -651,7 +651,7 @@ public class MainActivity extends ActionBarActivity {
         today.set(Calendar.MILLISECOND, 0);
 
         int totalTimeToday = NotifyUser.calculateTotalTime(today);
-        Log.d("totalTime", String.valueOf(totalTimeToday));
+
         // calculates the assignments due between now and the end of the day
         ArrayList<Assignment> assignmentsDueToday = new ArrayList<>();
         for (Assignment assignment : usersAssignments) {
@@ -871,9 +871,9 @@ public class MainActivity extends ActionBarActivity {
         // Checks each day for the hours that have/include an event
         // Sums up this number of hours for each day
         // ** Avoids double counting
-        System.out.println(usersEvents.toString()+"hi");
         if (!eventsBeforeDeadline.isEmpty()) {
             while (finalDate.get(Calendar.DAY_OF_MONTH) >= tempTime.get(Calendar.DAY_OF_MONTH)) {
+                System.out.println("OKAY");
                 hoursOfDayBusy = new ArrayList<>();
                 for (WorkrEvent event : eventsBeforeDeadline) {
                     if (event.getStart().get(Calendar.DAY_OF_MONTH) == tempTime.get(Calendar.DAY_OF_MONTH)) {
@@ -914,7 +914,6 @@ public class MainActivity extends ActionBarActivity {
         } else {
             timeTakenForEvents.set(2, tempTimeTakenForEvents);
         }
-        System.out.println(timeTakenForEvents.toString());
         return freeTime - tempTimeTakenForEvents;
     }
 }
