@@ -404,10 +404,6 @@ public class MainActivity extends ActionBarActivity {
                     timeTakenForEvents.set(i, Integer.getInteger(listItemsToStringArrayCalendar[i]));
                 }
             }
-//                timeTakenForEvents.set(0, Integer.getInteger(listItemsToStringArrayCalendar[0]));
-//
-//                timeTakenForEvents.set(1, Integer.getInteger(listItemsToStringArrayCalendar[1]));
-//                timeTakenForEvents.set(2, Integer.getInteger(listItemsToStringArrayCalendar[2]));
 //                Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG);
 //                cardArrayAdapter.updateList(listItems);
 //                cardArrayAdapter.notifyDataSetChanged();
@@ -428,7 +424,7 @@ public class MainActivity extends ActionBarActivity {
             }
             if (builderAssignment.toString().length() > 0) {
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy"); // or mm/dd/yy or assume 2015?
+                SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
 
 
                 listItemsToStringArrayAssignment = builderAssignment.toString().split("\n");
@@ -451,7 +447,7 @@ public class MainActivity extends ActionBarActivity {
 
     public Assignment createAssignment() {
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy"); // or mm/dd/yy or assume 2015?
+        SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
 
         try {
             cal.setTime(sdf.parse(taskInputData.get(2)));
@@ -823,7 +819,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
-     * TODO write description and comment code
      * @param freeTime the total number of hours between the current time and the future specified time
      * @param finalDate the future specified time an assignment may be due or the end of the week
      * @return the number of hours the user isn't busy, based on their Google Calendar events
