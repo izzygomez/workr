@@ -55,10 +55,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="100dp"
+            android:layout_marginLeft="80dp"
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@+id/line4Container"
-            android:text="Text line 3"
+            android:text="mm/dd/yyyy"
             android:id="@+id/line3"/>
 
         <LinearLayout

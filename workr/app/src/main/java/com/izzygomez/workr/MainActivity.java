@@ -38,6 +38,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -268,13 +269,18 @@ public class MainActivity extends ActionBarActivity {
 //        }
         if(currentlySelectedListItem != null) {
             listItems.remove(currentlySelectedListItem);
+            calcFreeTime();
         }
-        calcFreeTime();
+        else{
+            Toast.makeText(this, "Select an item to delete", Toast.LENGTH_LONG);
+        }
+
 
         currentlySelectedListItem = null;
         if (currentlySelectedRow != null) {
             currentlySelectedRow.setBackgroundResource(0);
         }
+
 //        Toast.makeText(this, listItems.toString(), Toast.LENGTH_LONG).show();
 //        cardArrayAdapter.notifyDataSetChanged();
         cardArrayAdapter.updateList(listItems);
@@ -282,8 +288,10 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void editSelectedItem(View v){
+        boolean somethingSelected = false;
         for (ListedItem item: listItems){
             if(item.isSelected()){
+                somethingSelected = true;
                 for (Assignment assignment : usersAssignments) {
                     if (currentlySelectedListItem.toString().equals(assignment.toString())) {
                         usersAssignments.remove(usersAssignments.indexOf(assignment));
@@ -294,6 +302,9 @@ public class MainActivity extends ActionBarActivity {
                 lastClickedRowArray = item.returnArrayList();
                 goToTaskInputScreen();
             }
+        }
+        if (!somethingSelected){
+            Toast.makeText(this, "Select an item to edit", Toast.LENGTH_LONG);
         }
     }
 

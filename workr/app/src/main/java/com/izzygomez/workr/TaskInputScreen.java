@@ -89,7 +89,27 @@ public class TaskInputScreen extends ActionBarActivity {
             returnData.add(completionTimeText.getText().toString());
 
         }
-        returnData.add(Integer.toString(month + 1) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
+        String time = dueDateText.getText().toString();
+
+        String m;
+        String d;
+        String y;
+        if (time != null) {
+            m = time.split("/")[0];
+            d = time.split("/")[1];
+            y = time.split("/")[2];
+        }
+        else{
+            m = Integer.toString(month);
+            d = Integer.toString(day);
+            y = Integer.toString(year);
+        }
+        if (!(m.equals(Integer.toString(month+1)) && d.equals(Integer.toString(day)) && y.equals(Integer.toString(year)))){
+            returnData.add(time);
+        }
+        else{
+            returnData.add(Integer.toString(month + 1) + "/" + Integer.toString(day) + "/" +Integer.toString(year));
+        }
 
         if (priority){
              returnData.add("High");
