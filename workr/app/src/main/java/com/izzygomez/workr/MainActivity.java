@@ -274,7 +274,7 @@ public class MainActivity extends ActionBarActivity {
             calcFreeTime();
         }
         else{
-            Toast.makeText(this, "Select an item to delete", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Select an item to delete", Toast.LENGTH_LONG).show();
         }
 
 
@@ -306,7 +306,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         if (!somethingSelected){
-            Toast.makeText(this, "Select an item to edit", Toast.LENGTH_LONG);
+            Toast.makeText(this, "Select an item to edit", Toast.LENGTH_LONG).show();
         }
     }
 

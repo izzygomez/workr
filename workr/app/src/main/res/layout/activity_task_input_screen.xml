@@ -60,7 +60,9 @@
                 android:id="@+id/editText6"
                 android:singleLine="true"
                 android:inputType="number"
-                android:hint="Number of hours" />
+                android:hint="Number of hours"
+                android:maxLength="2"
+                android:numeric="integer" />
         </RelativeLayout>
 
         <RelativeLayout
