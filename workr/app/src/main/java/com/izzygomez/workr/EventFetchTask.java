@@ -64,8 +64,8 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
     public List<Event> fetchEventsFromCalendar() throws IOException {
         // Define what "now" and "month from now" are
         DateTime now = new DateTime(System.currentTimeMillis());
-        DateTime aMonthFromNow = new DateTime(System.currentTimeMillis()+2628000000L);
-
+//        DateTime aMonthFromNow = new DateTime(System.currentTimeMillis()+2628000000L);
+        DateTime aWeekFromNow = new DateTime(System.currentTimeMillis()+604800000);
         // init empty arrays for Event objects and corresponding strings (that we format later)
         List<Event> allEvents = new ArrayList<>();
         // List<String> eventStrings = new ArrayList<>(); // Debugging purposes TODO delete this
@@ -85,7 +85,7 @@ public class EventFetchTask extends AsyncTask<Void, Void, Void> {
                 // Extract events between now and a month from now...
                 Events events = mActivity.mService.events().list(calendarListEntry.getId())
                         .setTimeMin(now)
-                        .setTimeMax(aMonthFromNow)
+                        .setTimeMax(aWeekFromNow)
                         .setOrderBy("startTime")
                         .setSingleEvents(true)
                         .execute();
